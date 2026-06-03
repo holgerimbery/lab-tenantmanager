@@ -45,7 +45,7 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 │  └────────────┬─────────────┘   │    tenant at onboarding        │    │
 │               │                 │  • OIDC login for SaaS admins  │    │
 │  ┌────────────▼─────────────┐   │  • Mail.Send (Application)     │    │
-│  │  Azure Cosmos DB         │   │    for credential emails        │    │
+│  │  Azure Cosmos DB         │   │    for credential emails       │    │
 │  │  Azure Key Vault         │   └───────────────────────────────┘    │
 │  └──────────────────────────┘  ← stores per-tenant refresh tokens    │
 └──────────────────────────────────────────────────────────────────────┘
