@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Tenant Manager</title>
+  <meta name="description" content="Automate Microsoft 365 lab-tenant provisioning for Power Platform workshops. Deploy to your own Azure subscription in minutes." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <span class="nav__brand">⚙ Lab Tenant Manager</span>
+      <div class="nav__links">
+        <a href="#features">Features</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#deploy">Deploy</a>
+        <a href="https://github.com/holgerimbery/lab-tenantmanager" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero__badge">Open Source · MIT License</div>
+      <h1 class="hero__title">Automate your<br/>Power Platform workshops</h1>
+      <p class="hero__sub">
+        Lab Tenant Manager provisions Microsoft 365 lab tenants, creates personal Power Platform environments for every participant, and delivers credentials by email — all from a single web app running in your own Azure subscription.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary"
+           href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json"
+           target="_blank" rel="noopener">
+          <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" class="hero__azure-btn" />
+        </a>
+        <a class="btn btn--secondary" href="https://github.com/holgerimbery/lab-tenantmanager#readme" target="_blank" rel="noopener">
+          Read the docs →
+        </a>
+      </div>
+      <p class="hero__image-note">
+        Pre-built image: <code>ghcr.io/holgerimbery/lab-tenant-manager:latest</code>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Features ───────────────────────────────────────────────────── -->
+  <section class="section" id="features">
+    <div class="container">
+      <h2 class="section__title">Everything you need to run a workshop</h2>
+      <p class="section__sub">No build step. No Kubernetes. Just deploy and go.</p>
+
+      <div class="features">
+
+        <div class="feature">
+          <div class="feature__icon">🏢</div>
+          <h3>Multi-tenant onboarding</h3>
+          <p>Add any Microsoft 365 tenant as a lab tenant via a one-time global-admin consent URL. No recurring access required.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">⚡</div>
+          <h3>Automated provisioning</h3>
+          <p>Creates one personal Power Platform Developer environment (with Dataverse) per participant, routed to the Maker Welcome experience.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">🎟</div>
+          <h3>Workshop code system</h3>
+          <p>Generate shareable codes with optional expiry and usage limits. Participants self-serve at a public redemption portal.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">📧</div>
+          <h3>Credential email delivery</h3>
+          <p>Sends username, password, Power Apps URL, and Copilot Studio URL from your operator-tenant mailbox. Resend at any time.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">✅</div>
+          <h3>Pre-flight checks</h3>
+          <p>Verify tenant licenses, Power Platform token availability, and security group membership before starting provisioning.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">🧹</div>
+          <h3>Lab cleanup</h3>
+          <p>Removes all <code>labadmin*</code> users and their environments to reset the tenant between workshops.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">🔄</div>
+          <h3>Token re-authorization</h3>
+          <p>Refresh an expired delegated Power Platform token without repeating the full onboarding flow.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">🔒</div>
+          <h3>Zero standing credentials</h3>
+          <p>Managed identity for Azure resource access. Delegated tokens stored encrypted in Key Vault. No long-lived secrets in env vars.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature__icon">📋</div>
+          <h3>Audit trail</h3>
+          <p>Every provisioning action, email send, and cleanup is logged per tenant for full visibility.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Architecture ───────────────────────────────────────────────── -->
+  <section class="section section--alt" id="architecture">
+    <div class="container">
+      <h2 class="section__title">How it works</h2>
+      <p class="section__sub">Runs entirely in your Azure subscription. No shared infrastructure.</p>
+
+      <div class="arch">
+        <div class="arch__box arch__box--operator">
+          <div class="arch__box-label">Operator Tenant (your Azure subscription)</div>
+          <div class="arch__inner">
+            <div class="arch__component">
+              <strong>Azure Container App</strong>
+              <span>Lab Tenant Manager web app</span>
+            </div>
+            <div class="arch__component">
+              <strong>Azure Cosmos DB</strong>
+              <span>Tenant &amp; user data</span>
+            </div>
+            <div class="arch__component">
+              <strong>Azure Key Vault</strong>
+              <span>Delegated tokens (encrypted)</span>
+            </div>
+            <div class="arch__component">
+              <strong>Multi-tenant App Registration</strong>
+              <span>Consented by each lab tenant once</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch__arrow">
+          <span>MS Graph + Power Platform API</span>
+          <div class="arch__arrow-line">↓</div>
+        </div>
+
+        <div class="arch__box arch__box--lab">
+          <div class="arch__box-label">Lab Tenant (one per client)</div>
+          <div class="arch__inner">
+            <div class="arch__component"><span>👤 Per-user Developer environments (with Dataverse)</span></div>
+            <div class="arch__component"><span>🔐 Security group → license assignment</span></div>
+            <div class="arch__component"><span>🧹 Cleanup: removes labadmin* users &amp; environments</span></div>
+            <div class="arch__component"><span>🌐 Maker Welcome → user's own environment</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Deploy ─────────────────────────────────────────────────────── -->
+  <section class="section" id="deploy">
+    <div class="container">
+      <h2 class="section__title">Deploy in 4 steps</h2>
+      <p class="section__sub">Everything runs with Azure CLI. No build tools required.</p>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step__number">1</div>
+          <div class="step__content">
+            <h3>Create an App Registration</h3>
+            <p>Create a multi-tenant Entra ID app registration in your operator tenant and note the client ID and secret.</p>
+            <pre><code>az ad app create \
+  --display-name "Lab Tenant Manager" \
+  --sign-in-audience AzureADMultipleOrgs</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__number">2</div>
+          <div class="step__content">
+            <h3>Deploy Azure Infrastructure</h3>
+            <p>Click the button or run the CLI command. Provisions Container App, Cosmos DB, Key Vault, and role assignments in one shot.</p>
+            <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json"
+               target="_blank" rel="noopener" class="step__deploy-btn">
+              <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
+            </a>
+            <p class="step__or">or via CLI</p>
+            <pre><code>az group create \
+  --name rg-lab-tenant-manager \
+  --location northeurope
+
+az deployment group create \
+  --resource-group rg-lab-tenant-manager \
+  --template-uri https://raw.githubusercontent.com/holgerimbery/lab-tenantmanager/main/deploy/azuredeploy.json \
+  --parameters baseName=ltm kvAdminObjectId=&lt;your-object-id&gt;</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__number">3</div>
+          <div class="step__content">
+            <h3>Configure the Container App</h3>
+            <p>Set environment variables and secrets for your app registration, tenant IDs, and email sender.</p>
+            <pre><code>az containerapp secret set -n ca-ltm -g rg-lab-tenant-manager \
+  --secrets \
+    "ad-client-secret=&lt;your-client-secret&gt;" \
+    "nextauth-secret=$(openssl rand -base64 32)" \
+    "auth-secret=$(openssl rand -base64 32)"
+
+az containerapp update -n ca-ltm -g rg-lab-tenant-manager \
+  --set-env-vars \
+    "AZURE_AD_CLIENT_ID=&lt;client-id&gt;" \
+    "OPERATOR_TENANT_ID=&lt;tenant-id&gt;" \
+    "NEXTAUTH_URL=https://&lt;your-fqdn&gt;" \
+    "MAIL_SENDER_UPN=noreply@yourdomain.com" \
+    "PP_DEFAULT_REGION=europe" \
+    "PP_DEFAULT_CURRENCY=EUR" \
+    "PP_DEFAULT_LANGUAGE=1033" \
+    "USAGE_LOCATION=DE"</code></pre>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__number">4</div>
+          <div class="step__content">
+            <h3>Sign in &amp; onboard your first lab tenant</h3>
+            <p>Open the app URL, sign in with your operator tenant account, and add a lab tenant. Share the onboarding URL with the lab tenant's Global Admin — they consent once, and you're ready to run workshops.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="deploy__cta">
+        <a class="btn btn--primary btn--large"
+           href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json"
+           target="_blank" rel="noopener">
+          <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
+        </a>
+        <a class="btn btn--ghost" href="https://github.com/holgerimbery/lab-tenantmanager/wiki" target="_blank" rel="noopener">
+          Full documentation →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© 2025 Holger Imbery — MIT License</span>
+      <div class="footer__links">
+        <a href="https://github.com/holgerimbery/lab-tenantmanager" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/holgerimbery/lab-tenantmanager/wiki" target="_blank" rel="noopener">Documentation</a>
+        <a href="https://github.com/holgerimbery/lab-tenantmanager/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
