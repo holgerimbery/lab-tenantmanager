@@ -326,10 +326,15 @@
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Create an App Registration</h3>
-          <p>Create a multi-tenant Entra ID app registration in your operator tenant and note the client ID and secret.</p>
+          <p>Create a multi-tenant Entra ID app registration in your operator tenant, grant the required Microsoft Graph application permissions (<code>User.ReadWrite.All</code>, <code>Group.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>, <code>LicenseAssignment.ReadWrite.All</code>, <code>Mail.Send</code>) plus the Power Platform delegated scope, then note the client ID and secret. Add redirect URIs after Step 2 once the Container App FQDN is known.</p>
           <pre class="code-block"><code>az ad app create \
   --display-name "Lab Tenant Manager" \
   --sign-in-audience AzureADMultipleOrgs</code></pre>
+          <p style="margin-top:.5rem;font-size:.8rem;">
+            <a href="https://github.com/holgerimbery/lab-tenantmanager/wiki/App-Registration"
+               target="_blank" rel="noopener"
+               style="color:var(--c-accent);">Full App Registration guide with CLI commands →</a>
+          </p>
         </div>
       </div>
 
@@ -337,7 +342,7 @@
         <div class="step-num">2</div>
         <div class="step-body">
           <h3>Deploy Azure Infrastructure</h3>
-          <p>Click the button or use the CLI. Provisions Container App, Cosmos DB, Key Vault, and role assignments in one step.</p>
+          <p>Click the button or use the CLI. Provisions Container App, Cosmos DB, Key Vault, and role assignments in one step. Once deployed, note the Container App FQDN and add the redirect URIs back to the app registration.</p>
           <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json"
              target="_blank" rel="noopener" class="step-deploy-btn">
             <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
