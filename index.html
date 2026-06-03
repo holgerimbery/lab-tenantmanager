@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Tenant Manager — Automate Power Platform Workshop Tenants</title>
+  <meta name="description" content="Lab Tenant Manager automates Microsoft 365 lab-tenant provisioning for Power Platform workshops. Deploy to your own Azure subscription in minutes." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --c-bg:      #f8fafc;
+      --c-surface: #ffffff;
+      --c-border:  #e2e8f0;
+      --c-text:    #1e293b;
+      --c-muted:   #64748b;
+      --c-accent:  #2563eb;
+      --c-dark:    #0f172a;
+      --radius:    12px;
+      --font: 'Inter', system-ui, -apple-system, sans-serif;
+      --nav-h: 64px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--c-bg);
+      color: var(--c-text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--c-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ───────────────────────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      background: rgba(15,23,42,.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1.5rem, 5vw, 3rem);
+    }
+    .nav-brand {
+      font-size: 1.05rem; font-weight: 700; color: #fff;
+      letter-spacing: -.02em; text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 1.75rem; }
+    .nav-links a {
+      color: rgba(255,255,255,.55); font-size: .875rem; font-weight: 500;
+      transition: color .15s; text-decoration: none;
+    }
+    .nav-links a:hover { color: #fff; }
+
+    /* ── Hero ──────────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(145deg, var(--c-dark) 0%, #1e3a5f 100%);
+      padding: calc(var(--nav-h) * .5 + 4.5rem) clamp(1.5rem, 6vw, 4rem) 5rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block; padding: .3rem .9rem; border-radius: 99px;
+      background: rgba(37,99,235,.2); border: 1px solid rgba(37,99,235,.35);
+      color: #93c5fd; font-size: .78rem; font-weight: 500; letter-spacing: .03em;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 800;
+      color: #fff; letter-spacing: -.03em; line-height: 1.13;
+      margin-bottom: 1.1rem;
+    }
+    .hero-sub {
+      font-size: clamp(.95rem, 2vw, 1.1rem); color: rgba(255,255,255,.55);
+      max-width: 620px; margin: 0 auto 2.25rem;
+    }
+    .hero-actions {
+      display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .65rem 1.4rem; border-radius: 8px;
+      font-size: .9rem; font-weight: 600; transition: all .15s;
+      text-decoration: none; cursor: pointer; white-space: nowrap;
+    }
+    .btn-primary { background: var(--c-accent); color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; text-decoration: none; }
+    .btn-outline {
+      background: transparent; color: rgba(255,255,255,.75);
+      border: 1px solid rgba(255,255,255,.25);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.08); color: #fff; text-decoration: none; }
+    .hero-image-note { font-size: .8rem; color: rgba(255,255,255,.3); }
+    .hero-image-note code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      background: rgba(255,255,255,.08); padding: 2px 7px; border-radius: 4px;
+      color: rgba(255,255,255,.5); font-size: .78rem;
+    }
+
+    /* ── Section ───────────────────────────────────────────────────── */
+    .section { padding: 5rem clamp(1.5rem, 5vw, 3rem); }
+    .section-alt { background: var(--c-surface); }
+    .section-inner { max-width: 1080px; margin: 0 auto; }
+    .section-label {
+      display: inline-block; font-size: .72rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--c-accent); margin-bottom: .6rem;
+    }
+    .section-title {
+      font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800;
+      letter-spacing: -.02em; margin-bottom: .6rem;
+    }
+    .section-sub { color: var(--c-muted); margin-bottom: 3rem; max-width: 560px; }
+
+    /* ── Feature grid ──────────────────────────────────────────────── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+    .feature-card {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: var(--radius); padding: 1.5rem;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .section-alt .feature-card { background: var(--c-bg); }
+    .feature-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.07); transform: translateY(-2px); }
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 10px; margin-bottom: .9rem;
+      background: linear-gradient(135deg,#eff6ff,#dbeafe);
+      display: flex; align-items: center; justify-content: center; font-size: 1.15rem;
+    }
+    .feature-card h3 { font-size: .95rem; font-weight: 700; margin-bottom: .4rem; }
+    .feature-card p { font-size: .875rem; color: var(--c-muted); line-height: 1.65; }
+    .feature-card code {
+      font-size: .8em; background: var(--c-bg);
+      padding: 1px 5px; border-radius: 4px; border: 1px solid var(--c-border);
+    }
+    .section-alt .feature-card code { background: var(--c-surface); }
+
+    /* ── Architecture ──────────────────────────────────────────────── */
+    .arch-wrap {
+      background: var(--c-dark); border-radius: var(--radius);
+      padding: 2rem; overflow-x: auto;
+    }
+    .arch-wrap pre {
+      font-family: 'JetBrains Mono','Fira Code',monospace;
+      font-size: .8rem; color: #94a3b8; line-height: 1.7; white-space: pre;
+    }
+
+    /* ── Steps ─────────────────────────────────────────────────────── */
+    .steps { display: flex; flex-direction: column; gap: 2rem; }
+    .step { display: grid; grid-template-columns: 48px 1fr; gap: 1.25rem; }
+    .step-num {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--c-accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .step-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+    .step-body p { font-size: .875rem; color: var(--c-muted); margin-bottom: .75rem; }
+    .step-deploy-btn { display: inline-block; margin-bottom: .5rem; }
+    .step-deploy-btn img { height: 38px; }
+    .step-or { font-size: .78rem; color: var(--c-muted); margin: .4rem 0; }
+    pre.code-block {
+      background: var(--c-dark); border-radius: 8px;
+      padding: 1rem 1.25rem; overflow-x: auto; margin-top: .5rem;
+    }
+    pre.code-block code {
+      font-family: 'JetBrains Mono','Fira Code',monospace;
+      font-size: .78rem; color: #e2e8f0; white-space: pre;
+      background: none; border: none; padding: 0;
+    }
+    .cta-row {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      justify-content: center; margin-top: 3rem;
+    }
+    .btn-dark {
+      background: var(--c-dark); color: rgba(255,255,255,.7);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .btn-dark:hover { background: #1e293b; color: #fff; text-decoration: none; }
+
+    /* ── Footer ────────────────────────────────────────────────────── */
+    .footer {
+      background: var(--c-dark);
+      padding: 2.5rem clamp(1.5rem, 5vw, 3rem);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .footer-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-inner p { font-size: .8rem; color: rgba(255,255,255,.3); }
+    .footer-inner a { color: rgba(255,255,255,.45); transition: color .15s; }
+    .footer-inner a:hover { color: rgba(255,255,255,.8); text-decoration: none; }
+    .footer-links { display: flex; gap: 1.25rem; }
+
+    @media (max-width: 600px) {
+      .nav-links { gap: 1rem; }
+      .step { grid-template-columns: 1fr; }
+      .step-num { margin-bottom: -.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ──────────────────────────────────────────────────────────── -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="nav-brand">⚙ Lab Tenant Manager</a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#deploy">Deploy</a>
+    <a href="https://github.com/holgerimbery/lab-tenantmanager" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-badge">Open for Deployment · Closed Source</div>
+  <h1>Automate your<br/>Power Platform workshops</h1>
+  <p class="hero-sub">
+    Lab Tenant Manager provisions Microsoft 365 lab tenants, creates personal Power Platform
+    environments for every participant, and delivers credentials by email — all from a single
+    web app running in your own Azure subscription.
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary"
+       href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json"
+       target="_blank" rel="noopener">
+      <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" style="height:28px;" />
+    </a>
+    <a class="btn btn-outline" href="https://github.com/holgerimbery/lab-tenantmanager#readme" target="_blank" rel="noopener">
+      Read the docs →
+    </a>
+  </div>
+  <p class="hero-image-note">
+    Pre-built image: <code>ghcr.io/holgerimbery/lab-tenant-manager:latest</code> · No build step required
+  </p>
+</section>
+
+<!-- ── Features ─────────────────────────────────────────────────────── -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need to run a workshop</h2>
+    <p class="section-sub">No build step. No Kubernetes. Just deploy and go.</p>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🏢</div>
+        <h3>Multi-tenant onboarding</h3>
+        <p>Add any Microsoft 365 tenant as a lab tenant via a one-time global-admin consent URL. No recurring access required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Automated provisioning</h3>
+        <p>Creates one personal Power Platform Developer environment (with Dataverse) per participant, routed to the Maker Welcome experience.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎟</div>
+        <h3>Workshop code system</h3>
+        <p>Generate shareable codes with optional expiry and usage limits. Participants self-serve at a public redemption portal.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📧</div>
+        <h3>Credential email delivery</h3>
+        <p>Sends username, password, Power Apps URL, and Copilot Studio URL from your operator-tenant mailbox. Resend at any time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>Pre-flight checks</h3>
+        <p>Verify tenant licenses, Power Platform token availability, and security group membership before starting provisioning.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧹</div>
+        <h3>Lab cleanup</h3>
+        <p>Removes all <code>labadmin*</code> users and their environments to reset the tenant between workshops.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>Token re-authorization</h3>
+        <p>Refresh an expired delegated Power Platform token without repeating the full onboarding flow.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Zero standing credentials</h3>
+        <p>Managed identity for Azure resource access. Delegated tokens stored encrypted in Key Vault. No long-lived secrets in env vars.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Audit trail</h3>
+        <p>Every provisioning action, email send, and cleanup is logged per tenant for full visibility.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Architecture ──────────────────────────────────────────────────── -->
+<section class="section section-alt" id="architecture">
+  <div class="section-inner">
+    <div class="section-label">Architecture</div>
+    <h2 class="section-title">How it works</h2>
+    <p class="section-sub">Runs entirely in your Azure subscription. No shared infrastructure.</p>
+
+    <div class="arch-wrap">
+      <pre>
+┌──────────────────────────────────────────────────────────────────────┐
+│  Operator Tenant (your Azure subscription)                           │
+│                                                                      │
+│  ┌──────────────────────────┐   ┌───────────────────────────────┐   │
+│  │  Azure Container App     │   │  Multi-tenant App Registration │   │
+│  │  Lab Tenant Manager      │◄──│  • OIDC login (SaaS admins)    │   │
+│  └────────────┬─────────────┘   │  • Mail.Send (Application)     │   │
+│               │                 │  • Graph + BAP app permissions  │   │
+│  ┌────────────▼─────────────┐   └───────────────────────────────┘   │
+│  │  Azure Cosmos DB         │   ← tenant, code, labuser, audit docs  │
+│  │  Azure Key Vault         │   ← per-tenant delegated refresh tokens│
+│  └──────────────────────────┘                                        │
+└──────────────────────────────────────────────────────────────────────┘
+         │  MS Graph API (app permissions)
+         │  Power Platform BAP API (delegated — stored refresh token)
+         ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│  Lab Tenant (one per client — standard Microsoft 365 tenant)         │
+│  • Per-user Power Platform Developer environments (with Dataverse)   │
+│  • Security group → license assignment                               │
+│  • Cleanup: removes labadmin* users &amp; environments between workshops │
+└──────────────────────────────────────────────────────────────────────┘</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ── Deploy ────────────────────────────────────────────────────────── -->
+<section class="section" id="deploy">
+  <div class="section-inner">
+    <div class="section-label">Deployment</div>
+    <h2 class="section-title">Deploy in 4 steps</h2>
+    <p class="section-sub">Everything runs with Azure CLI. No build tools required.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Create an App Registration</h3>
+          <p>Create a multi-tenant Entra ID app registration in your operator tenant and note the client ID and secret.</p>
+          <pre class="code-block"><code>az ad app create \
+  --display-name "Lab Tenant Manager" \
+  --sign-in-audience AzureADMultipleOrgs</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Deploy Azure Infrastructure</h3>
+          <p>Click the button or use the CLI. Provisions Container App, Cosmos DB, Key Vault, and role assignments in one step.</p>
+          <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json"
+             target="_blank" rel="noopener" class="step-deploy-btn">
+            <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
+          </a>
+          <p class="step-or">or via CLI</p>
+          <pre class="code-block"><code>az group create \
+  --name rg-lab-tenant-manager \
+  --location northeurope
+
+az deployment group create \
+  --resource-group rg-lab-tenant-manager \
+  --template-uri https://raw.githubusercontent.com/holgerimbery/lab-tenantmanager/main/deploy/azuredeploy.json \
+  --parameters baseName=ltm kvAdminObjectId=&lt;your-object-id&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Configure the Container App</h3>
+          <p>Set environment variables and secrets for your app registration, tenant IDs, and email sender.</p>
+          <pre class="code-block"><code>az containerapp secret set -n ca-ltm -g rg-lab-tenant-manager \
+  --secrets \
+    "ad-client-secret=&lt;your-client-secret&gt;" \
+    "nextauth-secret=$(openssl rand -base64 32)" \
+    "auth-secret=$(openssl rand -base64 32)"
+
+az containerapp update -n ca-ltm -g rg-lab-tenant-manager \
+  --set-env-vars \
+    "AZURE_AD_CLIENT_ID=&lt;client-id&gt;" \
+    "OPERATOR_TENANT_ID=&lt;tenant-id&gt;" \
+    "NEXTAUTH_URL=https://&lt;your-fqdn&gt;" \
+    "MAIL_SENDER_UPN=noreply@yourdomain.com" \
+    "PP_DEFAULT_REGION=europe" \
+    "PP_DEFAULT_CURRENCY=EUR" \
+    "PP_DEFAULT_LANGUAGE=1033" \
+    "USAGE_LOCATION=DE"</code></pre>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Sign in &amp; onboard your first lab tenant</h3>
+          <p>Open the app URL, sign in with your operator tenant account, and add a lab tenant. Share the onboarding URL with the lab tenant's Global Admin — they consent once, and you're ready to run workshops.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="cta-row">
+      <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json"
+         target="_blank" rel="noopener">
+        <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" style="height:40px;" />
+      </a>
+      <a class="btn btn-dark" href="https://github.com/holgerimbery/lab-tenantmanager/wiki" target="_blank" rel="noopener">
+        Full documentation →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ───────────────────────────────────────────────────────── -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-inner">
+    <p>
+      &copy; 2025 <a href="https://github.com/holgerimbery" target="_blank" rel="noopener">Holger Imbery</a>.
+      All rights reserved. ·
+      <a href="privacy.html">Privacy Policy</a> ·
+      <a href="impressum.html">Impressum</a>
+    </p>
+    <div class="footer-links">
+      <a href="https://github.com/holgerimbery/lab-tenantmanager" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/holgerimbery/lab-tenantmanager/wiki" target="_blank" rel="noopener">Docs</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
