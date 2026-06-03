@@ -145,11 +145,7 @@
     /* ── Architecture ──────────────────────────────────────────────── */
     .arch-wrap {
       background: var(--c-dark); border-radius: var(--radius);
-      padding: 2rem; overflow-x: auto;
-    }
-    .arch-wrap pre {
-      font-family: 'JetBrains Mono','Fira Code',monospace;
-      font-size: .8rem; color: #94a3b8; line-height: 1.7; white-space: pre;
+      padding: 1.5rem; overflow-x: auto;
     }
 
     /* ── Steps ─────────────────────────────────────────────────────── */
@@ -310,29 +306,9 @@
     <p class="section-sub">Runs entirely in your Azure subscription. No shared infrastructure.</p>
 
     <div class="arch-wrap">
-      <pre>
-┌──────────────────────────────────────────────────────────────────────┐
-│  Operator Tenant (your Azure subscription)                           │
-│                                                                      │
-│  ┌──────────────────────────┐   ┌───────────────────────────────┐   │
-│  │  Azure Container App     │   │  Multi-tenant App Registration │   │
-│  │  Lab Tenant Manager      │◄──│  • OIDC login (SaaS admins)    │   │
-│  └────────────┬─────────────┘   │  • Mail.Send (Application)     │   │
-│               │                 │  • Graph + BAP app permissions  │   │
-│  ┌────────────▼─────────────┐   └───────────────────────────────┘   │
-│  │  Azure Cosmos DB         │   ← tenant, code, labuser, audit docs  │
-│  │  Azure Key Vault         │   ← per-tenant delegated refresh tokens│
-│  └──────────────────────────┘                                        │
-└──────────────────────────────────────────────────────────────────────┘
-         │  MS Graph API (app permissions)
-         │  Power Platform BAP API (delegated — stored refresh token)
-         ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│  Lab Tenant (one per client — standard Microsoft 365 tenant)         │
-│  • Per-user Power Platform Developer environments (with Dataverse)   │
-│  • Security group → license assignment                               │
-│  • Cleanup: removes labadmin* users &amp; environments between workshops │
-└──────────────────────────────────────────────────────────────────────┘</pre>
+      <img src="architecture.svg"
+           alt="Architecture: Container App in operator tenant connects to App Registration, Cosmos DB, and Key Vault; calls MS Graph and Power Platform BAP APIs to provision per-user environments in lab tenants."
+           style="width:100%;max-width:860px;display:block;margin:0 auto;border-radius:8px;" />
     </div>
   </div>
 </section>
