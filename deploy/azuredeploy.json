@@ -39,6 +39,13 @@
       "metadata": {
         "description": "Tags applied to all resources"
       }
+    },
+    "kvRecovery": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Set to true when re-deploying with the same baseName after the Key Vault was previously deleted. Switches Key Vault createMode to 'recover' to restore the soft-deleted vault instead of attempting to create a new one with the same name."
+      }
     }
   },
   "resources": [
@@ -205,6 +212,9 @@
           "kvAdminObjectId": {
             "value": "[parameters('kvAdminObjectId')]"
           },
+          "kvRecovery": {
+            "value": "[parameters('kvRecovery')]"
+          },
           "tags": {
             "value": "[parameters('tags')]"
           }
@@ -229,6 +239,9 @@
             "kvAdminObjectId": {
               "type": "string"
             },
+            "kvRecovery": {
+              "type": "bool"
+            },
             "tags": {
               "type": "object"
             }
@@ -244,6 +257,8 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('tags')]",
               "properties": {
+                "createMode": "[if(parameters('kvRecovery'), 'recover', 'default')]",
+                "enablePurgeProtection": false,
                 "sku": {
                   "family": "A",
                   "name": "standard"
