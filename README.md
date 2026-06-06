@@ -3,6 +3,7 @@
 > Automate Microsoft 365 lab-tenant provisioning for Power Platform workshops — deployed in minutes to your own Azure subscription.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json)
+> ⚠️ Before deploying, complete the required setup in [Prerequisites](#prerequisites) and [Step 1 — App Registration](#step-1--app-registration).
 [![Container image](https://img.shields.io/badge/image-ghcr.io%2Fholgerimbery%2Flab--tenant--manager-blue)](https://ghcr.io/holgerimbery/lab-tenant-manager)
 
 ---
@@ -168,6 +169,7 @@ Note the `password` value — you will need it in Step 3.
 Click the button below or use the CLI commands. The deployment creates a Container App, Cosmos DB, Key Vault, and assigns all required managed-identity roles automatically.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json)
+> ⚠️ Before deploying, complete the required setup in [Prerequisites](#prerequisites) and [Step 1 — App Registration](#step-1--app-registration).
 
 ### CLI alternative
 
@@ -251,6 +253,24 @@ az containerapp update -n $CA -g $RG --set-env-vars \
 | `PP_DEFAULT_CURRENCY` | Currency for new environments | `EUR`, `USD` |
 | `PP_DEFAULT_LANGUAGE` | LCID for new environments | `1033` (English) |
 | `USAGE_LOCATION` | ISO 3166-1 country for Entra ID user accounts | `DE`, `US` |
+
+### Access model
+
+New access model:
+
+- **Master Admin** — sees and manages all tenants. Configured via `TENANT_MASTER_ADMIN_EMAILS`.
+- **Tenant Admin** — can access and manage only the tenants they onboarded or were explicitly granted access to. Configured via `TENANT_ADMIN_EMAILS`.
+- **Tenant ownership** — the user who onboards a tenant automatically becomes its manager.
+- **Delegated management** — a tenant admin can share management rights with other admins directly from the tenant detail page.
+
+Environment variables:
+
+```bash
+TENANT_ADMIN_EMAILS=user1@example.com,user2@example.com
+TENANT_MASTER_ADMIN_EMAILS=masteradmin@example.com
+```
+
+If neither variable is set, the previous behavior is preserved for backward compatibility: all authenticated users are allowed.
 
 ---
 
