@@ -1,10 +1,10 @@
 # Lab Tenant Manager
 
 > Automate Microsoft 365 lab-tenant provisioning for Power Platform workshops — deployed in minutes to your own Azure subscription.
-[![Container image](https://img.shields.io/badge/image-ghcr.io%2Fholgerimbery%2Flab--tenant--manager-blue)](https://ghcr.io/holgerimbery/lab-tenant-manager) 
+[![Container image](https://img.shields.io/badge/image-ghcr.io%2Fholgerimbery%2Flab--tenant--manager-blue)](https://ghcr.io/holgerimbery/lab-tenant-manager)  
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json)
 > ⚠️ Before deploying, complete the required setup in [Prerequisites](#prerequisites) and [Step 1 — App Registration](#step-1--app-registration).
-[![Container image](https://img.shields.io/badge/image-ghcr.io%2Fholgerimbery%2Flab--tenant--manager-blue)](https://ghcr.io/holgerimbery/lab-tenant-manager)
+
 
 ---
 
