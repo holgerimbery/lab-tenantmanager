@@ -61,7 +61,9 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 └──────────────────────────────────────────────────────────────────────┘
 ```
 ---
-[Full Documentation](https://github.com/holgerimbery/lab-tenantmanager/wiki)
+## Dokumentation
+[Full Documentation](https://github.com/holgerimbery/lab-tenantmanager/wiki)  
+Quickstart - below
 ---
 
 ## Prerequisites
