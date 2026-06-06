@@ -60,7 +60,8 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 │  • Maker Welcome environment routing → user's own environment        │
 └──────────────────────────────────────────────────────────────────────┘
 ```
-
+---
+[Full Documentation](https://github.com/holgerimbery/lab-tenantmanager/wiki)
 ---
 
 ## Prerequisites
