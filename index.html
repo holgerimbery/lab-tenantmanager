@@ -161,6 +161,11 @@
     .step-body p { font-size: .875rem; color: var(--c-muted); margin-bottom: .75rem; }
     .step-deploy-btn { display: inline-block; margin-bottom: .5rem; }
     .step-deploy-btn img { height: 38px; }
+    .deploy-prereq-hint {
+      font-size: .78rem;
+      color: var(--c-muted);
+      margin: .35rem 0 .75rem;
+    }
     .step-or { font-size: .78rem; color: var(--c-muted); margin: .4rem 0; }
     pre.code-block {
       background: var(--c-dark); border-radius: 8px;
@@ -236,6 +241,7 @@
       Read the docs →
     </a>
   </div>
+  <p class="deploy-prereq-hint">Prerequisites are required before deploying. See <a href="https://github.com/holgerimbery/lab-tenantmanager#prerequisites" target="_blank" rel="noopener">README Prerequisites</a> and <a href="https://github.com/holgerimbery/lab-tenantmanager#step-1--app-registration" target="_blank" rel="noopener">Step 1 — App Registration</a>.</p>
   <p class="hero-image-note">
     Pre-built image: <code>ghcr.io/holgerimbery/lab-tenant-manager:latest</code> · No build step required
   </p>
@@ -347,6 +353,7 @@
              target="_blank" rel="noopener" class="step-deploy-btn">
             <img src="https://aka.ms/deploytoazurebutton" alt="Deploy to Azure" />
           </a>
+          <p class="deploy-prereq-hint">Prerequisites are required before deploying. See <a href="https://github.com/holgerimbery/lab-tenantmanager#prerequisites" target="_blank" rel="noopener">README Prerequisites</a> and <a href="https://github.com/holgerimbery/lab-tenantmanager#step-1--app-registration" target="_blank" rel="noopener">Step 1 — App Registration</a>.</p>
           <p class="step-or">or via CLI</p>
           <pre class="code-block"><code>az group create \
   --name rg-lab-tenant-manager \
@@ -402,6 +409,7 @@ az containerapp update -n ca-ltm -g rg-lab-tenant-manager \
         Full documentation →
       </a>
     </div>
+    <p class="deploy-prereq-hint">Prerequisites are required before deploying. See <a href="https://github.com/holgerimbery/lab-tenantmanager#prerequisites" target="_blank" rel="noopener">README Prerequisites</a> and <a href="https://github.com/holgerimbery/lab-tenantmanager#step-1--app-registration" target="_blank" rel="noopener">Step 1 — App Registration</a>.</p>
   </div>
 </section>
 
