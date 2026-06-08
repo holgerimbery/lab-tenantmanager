@@ -142,6 +142,47 @@
     }
     .section-alt .feature-card code { background: var(--c-surface); }
 
+    /* ── Product gallery ─────────────────────────────────────────────── */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .gallery-card {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+    }
+    .section-alt .gallery-card { background: var(--c-bg); }
+    .gallery-card a {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+    .gallery-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .gallery-caption {
+      padding: .9rem 1rem 1rem;
+    }
+    .gallery-caption h3 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .25rem;
+      color: var(--c-text);
+    }
+    .gallery-caption p {
+      font-size: .84rem;
+      color: var(--c-muted);
+      line-height: 1.5;
+    }
+
     /* ── Architecture ──────────────────────────────────────────────── */
     .arch-wrap {
       background: var(--c-dark); border-radius: var(--radius);
@@ -216,6 +257,7 @@
   <a href="index.html" class="nav-brand">⚙ Lab Tenant Manager</a>
   <div class="nav-links">
     <a href="#features">Features</a>
+    <a href="#gallery">Gallery</a>
     <a href="#architecture">Architecture</a>
     <a href="#deploy">Deploy</a>
     <a href="https://github.com/holgerimbery/lab-tenantmanager" target="_blank" rel="noopener">GitHub</a>
@@ -300,6 +342,77 @@
         <h3>Audit trail</h3>
         <p>Every provisioning action, email send, and cleanup is logged per tenant for full visibility.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Gallery ───────────────────────────────────────────────────────── -->
+<section class="section" id="gallery">
+  <div class="section-inner">
+    <div class="section-label">Product Gallery</div>
+    <h2 class="section-title">See the experience in action</h2>
+    <p class="section-sub">Admin and participant flows from onboarding through environment management.</p>
+
+    <div class="gallery-grid">
+      <article class="gallery-card">
+        <a href="images/gallery/manager-main.png" target="_blank" rel="noopener">
+          <img src="images/gallery/manager-main.png" alt="Lab Tenants list view with onboarded tenant and management actions." loading="lazy" />
+          <div class="gallery-caption">
+            <h3>Tenant overview</h3>
+            <p>View onboarded lab tenants, current status, and jump directly into tenant management.</p>
+          </div>
+        </a>
+      </article>
+
+      <article class="gallery-card">
+        <a href="images/gallery/account-admin.png" target="_blank" rel="noopener">
+          <img src="images/gallery/account-admin.png" alt="Account management page for storing global admin credentials and shared admin access." loading="lazy" />
+          <div class="gallery-caption">
+            <h3>Account management</h3>
+            <p>Create or update tenant admin credentials and share access with additional tenant admins.</p>
+          </div>
+        </a>
+      </article>
+
+      <article class="gallery-card">
+        <a href="images/gallery/manager-tenant.png" target="_blank" rel="noopener">
+          <img src="images/gallery/manager-tenant.png" alt="Tenant detail page showing codes, users, environments, and delegated token re-authorization." loading="lazy" />
+          <div class="gallery-caption">
+            <h3>Tenant operations</h3>
+            <p>Run cleanup, manage codes and users, and trigger delegated token re-authorization when needed.</p>
+          </div>
+        </a>
+      </article>
+
+      <article class="gallery-card">
+        <a href="images/gallery/manager-environment.png" target="_blank" rel="noopener">
+          <img src="images/gallery/manager-environment.png" alt="Environment management view with total environments and Dataverse role details." loading="lazy" />
+          <div class="gallery-caption">
+            <h3>Environment management</h3>
+            <p>Track user and admin environments, view Dataverse role assignments, and open environments directly.</p>
+          </div>
+        </a>
+      </article>
+
+      <article class="gallery-card">
+        <a href="images/gallery/manager-user.png" target="_blank" rel="noopener">
+          <img src="images/gallery/manager-user.png" alt="Lab users page with licenses, claim status, participant email, and role information." loading="lazy" />
+          <div class="gallery-caption">
+            <h3>User management</h3>
+            <p>Inspect provisioned users, licenses, claim details, and Dataverse role mappings per participant.</p>
+          </div>
+        </a>
+      </article>
+
+      <article class="gallery-card">
+        <a href="images/gallery/claim-environment-account.png" target="_blank" rel="noopener">
+          <img src="images/gallery/claim-environment-account.png" alt="Participant claim screen for redeeming workshop code and receiving personal environment." loading="lazy" />
+          <div class="gallery-caption">
+            <h3>Participant claim flow</h3>
+            <p>Participants redeem a workshop code and receive their personal Power Platform environment.</p>
+          </div>
+        </a>
+      </article>
     </div>
   </div>
 </section>
