@@ -1,6 +1,6 @@
 # Lab Tenant Manager
 
-> Automate Microsoft 365 lab-tenant provisioning for Power Platform workshops — deployed in minutes to your own Azure subscription.  
+> Automate Microsoft 365 lab-tenant provisioning for Power Platform workshops — and let teams create governed developer environments themselves. Deployed in minutes to your own Azure subscription.  
 [![Container image](https://img.shields.io/badge/image-ghcr.io%2Fholgerimbery%2Flab--tenant--manager-blue)](https://ghcr.io/holgerimbery/lab-tenant-manager)  
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json)  
 > ⚠️ Before deploying, complete the required setup in [Prerequisites](#prerequisites) and [Step 1 — App Registration](#step-1--app-registration).
@@ -16,6 +16,8 @@
 **Lab Tenant Manager** is a SaaS web application that helps workshop operators manage Microsoft 365 **lab tenants** used in Power Platform trainings.  
 It automates the full lifecycle: tenant onboarding, pre-flight checks, participant code generation, per-user Power Platform environment provisioning, and credential email delivery — all without giving participants direct admin access to the lab tenant.
 
+It can also run a tenant as a **development environment manager**: members of an existing Entra security group sign in with their own accounts and create Power Platform developer environments themselves — with required licenses, quotas, DLP policies and retention enforced.
+
 The application runs as an **Azure Container App** in your own Azure subscription and is delivered as a pre-built container image — no build step required.
 
 > **Container image:** `ghcr.io/holgerimbery/lab-tenant-manager:latest`
@@ -24,12 +26,16 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 
 ## Features
 
-- **Multi-tenant onboarding** — add any Microsoft 365 tenant as a "lab tenant" via a one-time global-admin consent URL; no recurring access required
+- **Multi-tenant onboarding** — add any Microsoft 365 tenant via a one-time global-admin consent URL; choose *Workshop lab* or *Development environments* and the app opens the right setup page
+- **Security-group participants** — use members of an existing Entra security group instead of created accounts; required licenses and free seats are checked against the member count
+- **Development environment manager** — group members create, renew and delete their own developer environments in a maker portal; quotas, region, DLP, retention and optional environment groups are enforced
+- **Workshop and development side by side** — a Mode column shows each tenant's mode
 - **Power Platform environment provisioning** — creates one personal Developer environment (with Dataverse) per participant, routed to the Maker Welcome experience
 - **Workshop code system** — generate shareable codes with optional expiry and usage limits; participants redeem them at a self-service portal
 - **Automated credential emails** — sends username, password, Power Apps URL, and Copilot Studio URL from your operator-tenant mailbox; resend at any time
 - **Pre-flight checks** — verify tenant licenses, delegated token availability, and security group membership before provisioning
-- **Lab cleanup** — removes all `labadmin*` users and their environments to reset the tenant between workshops
+- **Lab cleanup** — removes only the accounts and environments the app created, to reset the tenant between workshops
+- **Safe recovery** — retry a failed participant environment or Lab - Admin / Lab - Target without rerunning setup or creating duplicates
 - **Re-authorization flow** — refresh a lab tenant's delegated Power Platform token without repeating the full onboarding
 - **Per-tenant email customization** — set a custom sender address and welcome message per lab tenant
 - **Audit trail** — every provisioning and email action is logged per tenant
@@ -56,7 +62,10 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
          ▼
 ┌──────────────────────────────────────────────────────────────────────┐
 │  Lab Tenant (demo Microsoft 365 tenant — one per client)             │
-│  • Cleanup: removes labadmin* users + developer environments         │
+│  • Workshop: labadmin* accounts, each with its own Developer env     │
+│  • Development: group members create governed Developer envs         │
+│    themselves in the maker portal (licenses, quotas, DLP)            │
+│  • Cleanup: removes only what the app created                        │
 │  • Per-user Power Platform Developer environments (with Dataverse)   │
 │  • Security group → license assignment                               │
 │  • Dataverse System Admin role for provisioned user + global admin   │
@@ -66,7 +75,7 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 
 --- 
 
-## Dokumentation
+## Documentation
 
 [Full Documentation](https://github.com/holgerimbery/lab-tenantmanager/wiki)  
 Quickstart - [below](https://github.com/holgerimbery/lab-tenantmanager/blob/main/README.md#prerequisites)
@@ -112,8 +121,12 @@ FQDN=<your-container-app-fqdn>
 az ad app update --id $CLIENT_ID \
   --web-redirect-uris \
     "https://$FQDN/api/auth/callback/microsoft-entra-id" \
-    "https://$FQDN/api/auth/onboard-callback"
+    "https://$FQDN/api/auth/onboard-callback" \
+    "https://$FQDN/api/auth/adminconsent-callback" \
+    "https://$FQDN/api/auth/callback/tenant-maker"
 ```
+
+`tenant-maker` is the maker portal sign-in used by development tenants.
 
 ### API Permissions — Application (no signed-in user required)
 
@@ -263,6 +276,8 @@ az containerapp update -n $CA -g $RG --set-env-vars \
 | `PP_DEFAULT_CURRENCY` | Currency for new environments | `EUR`, `USD` |
 | `PP_DEFAULT_LANGUAGE` | LCID for new environments | `1033` (English) |
 | `USAGE_LOCATION` | ISO 3166-1 country for Entra ID user accounts | `DE`, `US` |
+| `DEVELOPMENT_WORKER_ENABLED` | Runs the development-environment worker (set by the template) | `true` |
+| `PP_PAC_MACRO_REGION` | Optional PAC CLI macro region when the region is not `unitedstates` | `eu-efta`, `europe-uk` |
 
 ### Access model
 
@@ -287,14 +302,15 @@ If neither variable is set, the previous behavior is preserved for backward comp
 ## Step 4 — First Login & Onboarding
 
 1. Navigate to `https://<your-container-app-fqdn>` and sign in with your **operator tenant** Microsoft account.
-2. Go to **Tenants → New Tenant**, enter the lab tenant domain and an Entra ID security group name.
-3. Copy the generated **onboarding URL** and open it as (or send it to) the lab tenant Global Admin — they grant consent once; the delegated Power Platform token is stored in Key Vault.
-4. Run **Pre-flight checks** on the tenant page to verify licenses and token availability.
-5. Go to the **Codes** tab, generate a workshop code, and share it with participants.
+2. Go to **Tenants → Onboard Tenant**, choose **🎓 Workshop lab** or **🛠️ Development environments**, and enter the lab tenant domain.
+3. Copy the generated **onboarding URL** and open it as (or send it to) the lab tenant Global Admin — they grant consent once. The app then opens the right next step automatically.
+4. **Workshop lab:** complete the setup wizard, run **Pre-flight checks**, then open **Manage Codes**, generate a workshop code and share it with participants.
+5. **Development environments:** follow the *Getting started* checklist on **Participants & development** — pick the security group, required licenses and policy (region, quotas, DLP), save, preview, then share the maker portal link.
 
 ### Participant self-service
 
-Participants go to `https://<your-fqdn>/redeem`, enter the workshop code and their email address, and receive their credentials on-screen and by email.
+- **Workshop:** participants go to `https://<your-fqdn>/redeem`, enter the workshop code and their email address, and receive their credentials on-screen and by email.
+- **Development:** members open `https://<your-fqdn>/sign-in?portal=developer`, sign in with their own account, and create, renew or delete their developer environments.
 
 ---
 
@@ -308,12 +324,19 @@ az containerapp update -n $CA -g $RG \
   --image ghcr.io/holgerimbery/lab-tenant-manager:latest
 ```
 
-To pin to a specific release tag (e.g. `v1.2.0`):
+To pin to a specific release tag (e.g. `v0.7.0`):
 
 ```bash
 az containerapp update -n $CA -g $RG \
-  --image ghcr.io/holgerimbery/lab-tenant-manager:v1.2.0
+  --image ghcr.io/holgerimbery/lab-tenant-manager:v0.7.0
 ```
+
+### Upgrading to 0.7.0
+
+Image updates keep your environment variables. Existing deployments additionally need:
+
+1. The redirect URIs `/api/auth/adminconsent-callback` and `/api/auth/callback/tenant-maker` (see [Redirect URIs](#redirect-uris) — the command replaces the whole list, so pass all four).
+2. The development worker: `az containerapp update -n $CA -g $RG --set-env-vars DEVELOPMENT_WORKER_ENABLED=true`
 
 ---
 
@@ -325,6 +348,11 @@ az containerapp update -n $CA -g $RG \
 | Dataverse not created in Developer environments | Delegated Power Platform token missing | Run Pre-flight checks, then use **🔄 Re-authorize** on the tenant page |
 | Credential email returns 403 | `Mail.Send` not granted or wrong sender UPN | Confirm Application permission + admin consent; sender must be a mailbox in the **operator tenant** |
 | Container scales to zero, jobs lost | `minReplicas` set to 0 | `az containerapp update -n $CA -g $RG --min-replicas 1` |
+| A participant environment failed | Transient Power Platform error | **Lab Users → Retry environment** (no duplicates); for Lab - Admin / Target use the retry button on the tenant page |
+| Maker portal sign-in fails | `tenant-maker` redirect URI missing | Add all four redirect URIs from Step 1 |
+| Development environments stay queued | Worker not running | Set `DEVELOPMENT_WORKER_ENABLED=true`, keep `minReplicas` 1 |
+| Developer environment fails outside the US | No PAC macro region | Set `PP_PAC_MACRO_REGION` (e.g. `eu-efta`) |
+| Removing a tenant returns 409 | Development environments still exist | Delete them on **Participants & development** first |
 
 For detailed diagnostics see the [Wiki](../../wiki).
 
