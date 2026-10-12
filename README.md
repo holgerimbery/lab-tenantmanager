@@ -62,7 +62,10 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
          ▼
 ┌──────────────────────────────────────────────────────────────────────┐
 │  Lab Tenant (demo Microsoft 365 tenant — one per client)             │
-│  • Cleanup: removes labadmin* users + developer environments         │
+│  • Workshop: labadmin* accounts, each with its own Developer env     │
+│  • Development: group members create governed Developer envs         │
+│    themselves in the maker portal (licenses, quotas, DLP)            │
+│  • Cleanup: removes only what the app created                        │
 │  • Per-user Power Platform Developer environments (with Dataverse)   │
 │  • Security group → license assignment                               │
 │  • Dataverse System Admin role for provisioned user + global admin   │
@@ -72,7 +75,7 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 
 --- 
 
-## Dokumentation
+## Documentation
 
 [Full Documentation](https://github.com/holgerimbery/lab-tenantmanager/wiki)  
 Quickstart - [below](https://github.com/holgerimbery/lab-tenantmanager/blob/main/README.md#prerequisites)
@@ -301,7 +304,7 @@ If neither variable is set, the previous behavior is preserved for backward comp
 1. Navigate to `https://<your-container-app-fqdn>` and sign in with your **operator tenant** Microsoft account.
 2. Go to **Tenants → Onboard Tenant**, choose **🎓 Workshop lab** or **🛠️ Development environments**, and enter the lab tenant domain.
 3. Copy the generated **onboarding URL** and open it as (or send it to) the lab tenant Global Admin — they grant consent once. The app then opens the right next step automatically.
-4. **Workshop lab:** complete the setup wizard, run **Pre-flight checks**, then go to the **Codes** tab, generate a workshop code and share it with participants.
+4. **Workshop lab:** complete the setup wizard, run **Pre-flight checks**, then open **Manage Codes**, generate a workshop code and share it with participants.
 5. **Development environments:** follow the *Getting started* checklist on **Participants & development** — pick the security group, required licenses and policy (region, quotas, DLP), save, preview, then share the maker portal link.
 
 ### Participant self-service
@@ -321,12 +324,19 @@ az containerapp update -n $CA -g $RG \
   --image ghcr.io/holgerimbery/lab-tenant-manager:latest
 ```
 
-To pin to a specific release tag (e.g. `v1.2.0`):
+To pin to a specific release tag (e.g. `v0.7.0`):
 
 ```bash
 az containerapp update -n $CA -g $RG \
-  --image ghcr.io/holgerimbery/lab-tenant-manager:v1.2.0
+  --image ghcr.io/holgerimbery/lab-tenant-manager:v0.7.0
 ```
+
+### Upgrading to 0.7.0
+
+Image updates keep your environment variables. Existing deployments additionally need:
+
+1. The redirect URIs `/api/auth/adminconsent-callback` and `/api/auth/callback/tenant-maker` (see [Redirect URIs](#redirect-uris) — the command replaces the whole list, so pass all four).
+2. The development worker: `az containerapp update -n $CA -g $RG --set-env-vars DEVELOPMENT_WORKER_ENABLED=true`
 
 ---
 
@@ -338,6 +348,11 @@ az containerapp update -n $CA -g $RG \
 | Dataverse not created in Developer environments | Delegated Power Platform token missing | Run Pre-flight checks, then use **🔄 Re-authorize** on the tenant page |
 | Credential email returns 403 | `Mail.Send` not granted or wrong sender UPN | Confirm Application permission + admin consent; sender must be a mailbox in the **operator tenant** |
 | Container scales to zero, jobs lost | `minReplicas` set to 0 | `az containerapp update -n $CA -g $RG --min-replicas 1` |
+| A participant environment failed | Transient Power Platform error | **Lab Users → Retry environment** (no duplicates); for Lab - Admin / Target use the retry button on the tenant page |
+| Maker portal sign-in fails | `tenant-maker` redirect URI missing | Add all four redirect URIs from Step 1 |
+| Development environments stay queued | Worker not running | Set `DEVELOPMENT_WORKER_ENABLED=true`, keep `minReplicas` 1 |
+| Developer environment fails outside the US | No PAC macro region | Set `PP_PAC_MACRO_REGION` (e.g. `eu-efta`) |
+| Removing a tenant returns 409 | Development environments still exist | Delete them on **Participants & development** first |
 
 For detailed diagnostics see the [Wiki](../../wiki).
 
