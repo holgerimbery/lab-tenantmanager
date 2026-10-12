@@ -22,6 +22,19 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 
 > **Container image:** `ghcr.io/holgerimbery/lab-tenant-manager:latest`
 
+### Two modes
+
+Choose the mode per tenant when you onboard it. Both modes can run side by side in one installation, and a **Mode** column shows each tenant's mode.
+
+| | 🎓 **Workshop lab** | 🛠️ **Development environment manager** |
+|---|---|---|
+| **For** | Trainings, hackathons, demos | Teams who build on Power Platform |
+| **Who** | Participants with a workshop code | Members of an existing Entra security group |
+| **Accounts** | App creates `labadmin*` accounts (or uses group members) | Members use their **own** work accounts |
+| **Environments** | One Developer environment per account, pre-provisioned by the app | Members create, renew and delete their own in a **maker portal** |
+| **Governance** | Licenses via security group, cleanup after the workshop | Required licenses, quotas, region, DLP policies, retention, optional Managed Environment groups |
+| **Entry point** | `https://<fqdn>/redeem` | `https://<fqdn>/sign-in?portal=developer` |
+
 ---
 
 ## Features
