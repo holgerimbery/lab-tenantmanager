@@ -272,6 +272,7 @@
     Lab Tenant Manager provisions Microsoft 365 lab tenants, creates dedicated Power Platform,
     Copilot Studio agent, and Azure AI environments for every participant, and delivers
     credentials by email — ready for workshops, hackathons, and training labs alike.
+    New in 0.7.0: let your teams create governed developer environments themselves.
   </p>
   <div class="hero-actions">
     <a class="btn btn-primary"
@@ -293,14 +294,24 @@
 <section class="section" id="features">
   <div class="section-inner">
     <div class="section-label">Features</div>
-    <h2 class="section-title">Everything you need to run a workshop</h2>
+    <h2 class="section-title">Everything you need to run a workshop — or a dev team</h2>
     <p class="section-sub">No build step. No Kubernetes. Just deploy and go.</p>
 
     <div class="features">
       <div class="feature-card">
         <div class="feature-icon">🏢</div>
         <h3>Multi-tenant onboarding</h3>
-        <p>Add any Microsoft 365 tenant as a lab tenant via a one-time global-admin consent URL. No recurring access required.</p>
+        <p>Add any Microsoft 365 tenant via a one-time global-admin consent URL. Choose <em>Workshop lab</em> or <em>Development environments</em> — the app opens the right setup page.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛠</div>
+        <h3>Development environment manager <span style="font-size:.7rem;color:var(--c-accent);">NEW</span></h3>
+        <p>Members of a security group create, renew and delete their own developer environments in a maker portal. Quotas, region, DLP, retention and environment groups are enforced.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Security-group participants <span style="font-size:.7rem;color:var(--c-accent);">NEW</span></h3>
+        <p>Use the members of an existing Entra security group instead of created accounts. Required licenses and free seats are checked against the member count.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">⚡</div>
@@ -324,8 +335,8 @@
       </div>
       <div class="feature-card">
         <div class="feature-icon">🧹</div>
-        <h3>Lab cleanup</h3>
-        <p>Removes all <code>labadmin*</code> users and their environments to reset the tenant between workshops.</p>
+        <h3>Lab cleanup &amp; safe recovery</h3>
+        <p>Removes only the accounts and environments the app created. Retry a failed participant environment or Lab - Admin / Lab - Target without duplicates.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🔄</div>
@@ -506,8 +517,8 @@ az containerapp update -n ca-ltm -g rg-lab-tenant-manager \
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-body">
-          <h3>Sign in &amp; onboard your first lab tenant</h3>
-          <p>Open the app URL, sign in with your operator tenant account, and add a lab tenant. Share the onboarding URL with the lab tenant's Global Admin — they consent once, and you're ready to run workshops.</p>
+          <h3>Sign in &amp; onboard your first tenant</h3>
+          <p>Open the app URL, sign in with your operator tenant account, choose <em>Workshop lab</em> or <em>Development environments</em>, and enter the tenant domain. Share the onboarding URL with the tenant's Global Admin — they consent once, and the app guides you through the rest.</p>
         </div>
       </div>
 
