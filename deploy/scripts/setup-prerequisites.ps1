@@ -99,28 +99,6 @@ try {
     Write-WarningMsg "Could not parse 'az version' output. Proceeding, but ensure az >= 2.60."
 }
 
-# Check Bicep CLI availability
-$bicepInstalled = $false
-try {
-    $bicepVer = az bicep version 2>&1
-    if ($LASTEXITCODE -eq 0) {
-        $bicepInstalled = $true
-        Write-Success "Bicep CLI is available via 'az bicep'"
-    }
-} catch {
-    $bicepInstalled = $false
-}
-
-if (-not $bicepInstalled) {
-    Write-WarningMsg "Bicep CLI is not installed in Azure CLI. Installing via 'az bicep install'..."
-    az bicep install 2>&1 | Out-Null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Success "Bicep CLI installed successfully"
-    } else {
-        Write-WarningMsg "Could not auto-install Bicep. You can install it later with: az bicep install"
-    }
-}
-
 # ─────────────────────────────────────────────────────────────────────────────
 # 2. Azure Login & Subscription Selection
 # ─────────────────────────────────────────────────────────────────────────────

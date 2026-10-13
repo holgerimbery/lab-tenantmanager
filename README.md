@@ -101,7 +101,7 @@ Before you deploy, you need:
 
 - An **Azure subscription** with Contributor rights on a resource group
 - A **Microsoft 365 operator tenant** (the tenant where your SaaS admins will sign in — this is *your* tenant, not the lab tenant)
-- Azure CLI installed: `az version` ≥ 2.60 with `az bicep install`
+- Azure CLI installed: `az version` ≥ 2.60
 - Your Entra ID **Object ID** for Key Vault admin access:
 
 ```bash

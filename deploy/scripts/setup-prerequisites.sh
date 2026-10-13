@@ -67,14 +67,6 @@ fi
 AZ_VERSION=$(az version --output json | jq -r '."azure-cli"' 2>/dev/null || az version --output tsv 2>/dev/null | head -n1 | awk '{print $1}')
 echo "✓ Azure CLI version: $AZ_VERSION"
 
-# Check bicep
-if az bicep version &> /dev/null; then
-  echo "✓ Bicep CLI is available"
-else
-  echo "⚠️ Bicep CLI not detected. Attempting to install via 'az bicep install'..."
-  az bicep install || echo "⚠️ Could not auto-install Bicep. You can install it later via 'az bicep install'"
-fi
-
 echo ""
 echo "=== Step 2: Authenticating to Azure & selecting subscription ==="
 
