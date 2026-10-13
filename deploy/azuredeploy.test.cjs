@@ -62,3 +62,17 @@ test("keyvault does not attempt to set enablePurgeProtection to false", () => {
     "enablePurgeProtection must not be explicitly set to false because Azure policies or existing vaults reject disabling it");
 });
 
+test("bootstrap uses a public image without waiting for its own AcrPull assignment", () => {
+  const nested = template.resources.find((resource) => resource.name === "containerapp").properties.template;
+  const app = nested.resources.find((resource) => resource.type === "Microsoft.App/containerApps");
+  assert.equal(app.identity.type, "SystemAssigned");
+  assert.equal(app.properties.template.containers[0].image,
+    "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest");
+  assert.equal(app.properties.configuration.ingress.targetPort, 80);
+  assert.equal(Object.hasOwn(app.properties.configuration, "registries"), false);
+  const pull = nested.resources.find((resource) =>
+    resource.type === "Microsoft.Authorization/roleAssignments");
+  assert.equal(pull.properties.roleDefinitionId,
+    "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]");
+  assert.deepEqual(pull.dependsOn, ["[resourceId('Microsoft.App/containerApps', variables('appName'))]"]);
+});

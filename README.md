@@ -293,6 +293,10 @@ Go back to Step 1 and add the redirect URIs now.
 
 ## Step 3 — Configure the Container App
 
+Step 2 initially runs Microsoft's public hello-world image on port 80. It does not
+authenticate to ACR during bootstrap; the app's managed identity receives `AcrPull`
+after the app exists. Configure the secrets below before switching to Lab Tenant Manager.
+
 Replace all `<…>` placeholders with your actual values, then run:
 
 ```bash
@@ -324,6 +328,11 @@ az containerapp update -n $CA -g $RG --set-env-vars \
   "AZURE_AD_CLIENT_SECRET=secretref:ad-client-secret" \
   "NEXTAUTH_SECRET=secretref:nextauth-secret" \
   "AUTH_SECRET=secretref:auth-secret"
+
+# Replace the bootstrap image and switch ingress to the application's port
+az containerapp ingress update -n $CA -g $RG --target-port 3000
+az containerapp update -n $CA -g $RG \
+  --image ghcr.io/holgerimbery/lab-tenant-manager:latest
 ```
 
 ### Environment variable reference
