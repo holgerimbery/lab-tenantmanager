@@ -345,8 +345,8 @@
       </div>
       <div class="feature-card">
         <div class="feature-icon">🔒</div>
-        <h3>Zero standing credentials</h3>
-        <p>Managed identity for Azure resource access. Delegated tokens stored encrypted in Key Vault. No long-lived secrets in env vars.</p>
+        <h3>Least-privilege credentials</h3>
+        <p>Managed identity for ACR pull and Key Vault access. Cosmos DB uses its account key and the app registration a client secret, both stored as Container App secrets. Delegated tokens stored encrypted in Key Vault.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📋</div>
@@ -486,7 +486,7 @@
 az deployment group create \
   --resource-group rg-lab-tenant-manager \
   --template-uri https://raw.githubusercontent.com/holgerimbery/lab-tenantmanager/main/deploy/azuredeploy.json \
-  --parameters baseName=ltm kvAdminObjectId=&lt;your-object-id&gt;</code></pre>
+  --parameters baseName=ltm kvAdminObjectId=&lt;your-object-id&gt; powerPlatformGeography=eu-efta</code></pre>
         </div>
       </div>
 
@@ -494,23 +494,19 @@ az deployment group create \
         <div class="step-num">3</div>
         <div class="step-body">
           <h3>Configure the Container App</h3>
-          <p>Set environment variables and secrets for your app registration, tenant IDs, and email sender.</p>
-          <pre class="code-block"><code>az containerapp secret set -n ca-ltm -g rg-lab-tenant-manager \
-  --secrets \
-    "ad-client-secret=&lt;your-client-secret&gt;" \
-    "nextauth-secret=$(openssl rand -base64 32)" \
-    "auth-secret=$(openssl rand -base64 32)"
-
-az containerapp update -n ca-ltm -g rg-lab-tenant-manager \
-  --set-env-vars \
-    "AZURE_AD_CLIENT_ID=&lt;client-id&gt;" \
-    "OPERATOR_TENANT_ID=&lt;tenant-id&gt;" \
-    "NEXTAUTH_URL=https://&lt;your-fqdn&gt;" \
-    "MAIL_SENDER_UPN=noreply@yourdomain.com" \
-    "PP_DEFAULT_REGION=europe" \
-    "PP_DEFAULT_CURRENCY=EUR" \
-    "PP_DEFAULT_LANGUAGE=1033" \
-    "USAGE_LOCATION=DE"</code></pre>
+          <p>The deployment first runs a public placeholder image on port 80 — it has no secrets and no database access. Configuration turns it into the running app: it stores the secrets (including the <strong>Cosmos account key</strong> as <code>COSMOS_KEY</code>), sets the environment variables and the <code>TENANT_MASTER_ADMIN_EMAILS</code> admin allow-list, switches ingress to port 3000, and deploys the GHCR image.</p>
+          <p>Run the one-shot configuration script — it discovers the deployment outputs, wires every secret and variable, and adds the redirect URIs:</p>
+          <pre class="code-block"><code>./deploy/scripts/configure-containerapp.ps1 \
+  -ResourceGroup rg-lab-tenant-manager \
+  -ClientId &lt;client-id&gt; \
+  -OperatorTenantId &lt;tenant-id&gt; \
+  -MasterAdminEmails admin@yourdomain.com \
+  -MailSenderUpn noreply@yourdomain.com</code></pre>
+          <p style="margin-top:.5rem;font-size:.8rem;">
+            <a href="https://github.com/holgerimbery/lab-tenantmanager#step-3--configure-the-container-app"
+               target="_blank" rel="noopener"
+               style="color:var(--c-accent);">Full Step 3 with the manual Azure CLI path →</a>
+          </p>
         </div>
       </div>
 
@@ -518,7 +514,7 @@ az containerapp update -n ca-ltm -g rg-lab-tenant-manager \
         <div class="step-num">4</div>
         <div class="step-body">
           <h3>Sign in &amp; onboard your first tenant</h3>
-          <p>Open the app URL, sign in with your operator tenant account, choose <em>Workshop lab</em> or <em>Development environments</em>, and enter the tenant domain. Share the onboarding URL with the tenant's Global Admin — they consent once, and the app guides you through the rest.</p>
+          <p>Sign in at <code>https://&lt;your-fqdn&gt;/sign-in</code> with your operator tenant account (the root URL redirects participants to <code>/redeem</code>), then open the Admin Portal at <code>https://&lt;your-fqdn&gt;/admin</code>. A healthy revision does not prove database access — reaching <code>/admin</code> confirms Cosmos connectivity. Choose <em>Workshop lab</em> or <em>Development environments</em>, enter the tenant domain, and share the onboarding URL with the tenant's Global Admin — they consent once, and the app guides you through the rest.</p>
         </div>
       </div>
 
