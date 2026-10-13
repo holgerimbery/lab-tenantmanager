@@ -53,3 +53,12 @@ test("both region settings flow through the nested deployment without changing w
     assert.deepEqual(resolved, { PP_DEFAULT_REGION: region, PP_PAC_MACRO_REGION: geography });
   }
 });
+
+test("keyvault does not attempt to set enablePurgeProtection to false", () => {
+  const kvDeployment = template.resources.find((resource) => resource.name === "keyvault");
+  const nested = kvDeployment.properties.template;
+  const kvResource = nested.resources.find((resource) => resource.type === "Microsoft.KeyVault/vaults");
+  assert.equal(Object.hasOwn(kvResource.properties, "enablePurgeProtection"), false,
+    "enablePurgeProtection must not be explicitly set to false because Azure policies or existing vaults reject disabling it");
+});
+
