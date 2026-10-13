@@ -1,6 +1,12 @@
 .DS_Store
 Thumbs.db
+.env
+.env.*
+.env.local
 *.env
 *.env.local
+*.secret
+*.secrets
+*.local
 .idea/
 .vscode/
