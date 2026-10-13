@@ -108,6 +108,18 @@ Before you deploy, you need:
 az ad signed-in-user show --query id -o tsv
 ```
 
+### Additional prerequisites for development-environment tenants
+
+Only needed if you onboard a tenant in **🛠️ Development environments** mode:
+
+- An **existing Entra security group** in that tenant — its members create the environments
+- The required **licenses** for the group members (for example the Power Apps Developer Plan)
+- At least one existing **tenant DLP policy** — note its GUID
+- The **`tenant-maker` redirect URI** (`https://<fqdn>/api/auth/callback/tenant-maker`, see [Step 1](#redirect-uris))
+- **`DEVELOPMENT_WORKER_ENABLED=true`** and at least one replica (`minReplicas: 1`) so the worker processes jobs. New ARM deployments set both; deployments created before v0.7.0 need `az containerapp update -n <ca> -g <rg> --set-env-vars DEVELOPMENT_WORKER_ENABLED=true`
+
+See [Development Environments](https://github.com/holgerimbery/lab-tenantmanager/wiki/Development-Environments) for the full setup.
+
 ---
 
 ## Step 1 — App Registration
