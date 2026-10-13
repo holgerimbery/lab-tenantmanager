@@ -52,7 +52,7 @@ Choose the mode per tenant when you onboard it. Both modes can run side by side 
 - **Re-authorization flow** — refresh a lab tenant's delegated Power Platform token without repeating the full onboarding
 - **Per-tenant email customization** — set a custom sender address and welcome message per lab tenant
 - **Audit trail** — every provisioning and email action is logged per tenant
-- **Zero standing credentials** — managed identity for Azure resource access; delegated tokens stored encrypted in Key Vault
+- **Managed identity for Azure access** — the Container App's managed identity pulls from ACR and reads Key Vault. Cosmos DB uses its account key and the app registration uses a client secret; both are stored as Container App secrets, not in plain environment variables. Delegated Power Platform tokens are stored encrypted in Key Vault
 
 ---
 
@@ -295,36 +295,70 @@ Go back to Step 1 and add the redirect URIs now.
 
 Step 2 initially runs Microsoft's public hello-world image on port 80. It does not
 authenticate to ACR during bootstrap; the app's managed identity receives `AcrPull`
-after the app exists. Configure the secrets below before switching to Lab Tenant Manager.
+after the app exists. This placeholder is **not** the application — it has no secrets
+and no database access. Configuration turns it into the running app: it stores the
+secrets, sets the environment variables, switches ingress to port 3000, and replaces
+the placeholder with the Lab Tenant Manager image.
+
+### Easy path — configuration script
+
+The PowerShell script discovers the Container App, Cosmos account and FQDN from the
+deployment outputs, retrieves the Cosmos key, sets every secret and environment variable
+(including the `COSMOS_KEY` secret reference and the master-admin allow-list), switches to
+port 3000 and the GHCR image, and adds the four redirect URIs. It checks each Azure CLI
+exit code and never prints or stores secrets.
+
+```powershell
+./deploy/scripts/configure-containerapp.ps1 `
+  -ResourceGroup rg-lab-tenant-manager `
+  -ClientId <app-registration-client-id> `
+  -OperatorTenantId <your-operator-tenant-id> `
+  -MasterAdminEmails admin@yourdomain.com `
+  -MailSenderUpn noreply@yourdomain.com
+```
+
+You are prompted securely for the client secret (no echo). Skip ahead to
+[Step 4](#step-4--first-login--onboarding) once it completes.
+
+### Manual path — Azure CLI
 
 Replace all `<…>` placeholders with your actual values, then run:
 
 ```bash
-CA=ca-ltm        # adjust if you used a different baseName
+CA=ca-ltm          # adjust if you used a different baseName
 RG=rg-lab-tenant-manager
+COSMOS=cosmos-ltm  # from deployment output: cosmosAccountName
 
-# Generate a random NextAuth secret
+# Cosmos primary key — the app authenticates to Cosmos DB with this account key.
+# Without it, every request fails with "Required Header authorization is missing".
+COSMOS_KEY=$(az cosmosdb keys list -n $COSMOS -g $RG --type keys \
+  --query primaryMasterKey -o tsv)
+
+# Generate random NextAuth/Auth secrets
 NEXTAUTH_SECRET=$(openssl rand -base64 32)
 AUTH_SECRET=$(openssl rand -base64 32)
 
 # Set secrets
 az containerapp secret set -n $CA -g $RG --secrets \
+  "cosmos-key=$COSMOS_KEY" \
   "ad-client-secret=<app-registration-client-secret>" \
   "nextauth-secret=$NEXTAUTH_SECRET" \
   "auth-secret=$AUTH_SECRET"
 
-# Set environment variables (non-secret)
+# Set environment variables (non-secret). Set the master-admin allow-list so /admin is reachable.
 az containerapp update -n $CA -g $RG --set-env-vars \
   "AZURE_AD_CLIENT_ID=<app-registration-client-id>" \
   "OPERATOR_TENANT_ID=<your-operator-tenant-id>" \
   "NEXTAUTH_URL=https://<your-container-app-fqdn>" \
   "MAIL_SENDER_UPN=noreply@yourdomain.com" \
+  "TENANT_MASTER_ADMIN_EMAILS=admin@yourdomain.com" \
   "PP_DEFAULT_CURRENCY=EUR" \
   "PP_DEFAULT_LANGUAGE=1033" \
   "USAGE_LOCATION=DE"
 
-# Reference secrets in env vars
+# Reference secrets in env vars (COSMOS_KEY included)
 az containerapp update -n $CA -g $RG --set-env-vars \
+  "COSMOS_KEY=secretref:cosmos-key" \
   "AZURE_AD_CLIENT_SECRET=secretref:ad-client-secret" \
   "NEXTAUTH_SECRET=secretref:nextauth-secret" \
   "AUTH_SECRET=secretref:auth-secret"
@@ -335,12 +369,17 @@ az containerapp update -n $CA -g $RG \
   --image ghcr.io/holgerimbery/lab-tenant-manager:latest
 ```
 
+A healthy revision or an allocated FQDN does **not** prove database access. After the new
+revision is ready, sign in at `https://<your-fqdn>/sign-in` and open `https://<your-fqdn>/admin`
+to confirm Cosmos connectivity.
+
 ### Environment variable reference
 
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `AZURE_AD_CLIENT_ID` | App registration client ID | `xxxxxxxx-…` |
 | `AZURE_AD_CLIENT_SECRET` | App registration client secret | (secret ref) |
+| `COSMOS_KEY` | Cosmos DB primary key used to authenticate to Cosmos (required) | (secret ref) |
 | `OPERATOR_TENANT_ID` | Your operator tenant GUID | `xxxxxxxx-…` |
 | `NEXTAUTH_URL` | Full HTTPS URL of the Container App | `https://ca-ltm.…azurecontainerapps.io` |
 | `NEXTAUTH_SECRET` | Random 32-byte base64 string | (secret ref) |
@@ -375,7 +414,7 @@ If neither variable is set, the previous behavior is preserved for backward comp
 
 ## Step 4 — First Login & Onboarding
 
-1. Navigate to `https://<your-container-app-fqdn>` and sign in with your **operator tenant** Microsoft account.
+1. Navigate to `https://<your-container-app-fqdn>/sign-in` and sign in with your **operator tenant** Microsoft account. The Admin Portal dashboard is at `https://<your-container-app-fqdn>/admin`; the root URL redirects participants to `/redeem`.
 2. Go to **Tenants → Onboard Tenant**, choose **🎓 Workshop lab** or **🛠️ Development environments**, and enter the lab tenant domain.
 3. Copy the generated **onboarding URL** and open it as (or send it to) the lab tenant Global Admin — they grant consent once. The app then opens the right next step automatically.
 4. **Workshop lab:** complete the setup wizard, run **Pre-flight checks**, then open **Manage Codes**, generate a workshop code and share it with participants.
