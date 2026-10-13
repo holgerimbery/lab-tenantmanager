@@ -1,13 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "metadata": {
-    "_generator": {
-      "name": "bicep",
-      "version": "0.41.2.15936",
-      "templateHash": "1753149745326069540"
-    }
-  },
   "parameters": {
     "baseName": {
       "type": "string",
@@ -30,6 +23,20 @@
         "description": "Object ID of the Entra ID group or user to grant Key Vault admin access"
       }
     },
+    "powerPlatformGeography": {
+      "type": "string",
+      "allowedValues": [
+        "north-america",
+        "the-americas",
+        "eu-efta",
+        "europe-uk",
+        "emea",
+        "asia-pacific"
+      ],
+      "metadata": {
+        "description": "Approved Power Platform geography, independent of Azure hosting location. EU/EFTA is the EU Data Boundary; Europe/UK and EMEA permit broader placement."
+      }
+    },
     "tags": {
       "type": "object",
       "defaultValue": {
@@ -46,6 +53,16 @@
       "metadata": {
         "description": "Set to true when re-deploying with the same baseName after the Key Vault was previously deleted. Switches Key Vault createMode to 'recover' to restore the soft-deleted vault instead of attempting to create a new one with the same name."
       }
+    }
+  },
+  "variables": {
+    "powerPlatformRegions": {
+      "north-america": "unitedstates",
+      "the-americas": "unitedstates",
+      "eu-efta": "europe",
+      "europe-uk": "europe",
+      "emea": "europe",
+      "asia-pacific": "australia"
     }
   },
   "resources": [
@@ -411,6 +428,12 @@
           "acrResourceId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'acr'), '2025-04-01').outputs.resourceId.value]"
           },
+          "powerPlatformRegion": {
+            "value": "[variables('powerPlatformRegions')[parameters('powerPlatformGeography')]]"
+          },
+          "powerPlatformMacroRegion": {
+            "value": "[parameters('powerPlatformGeography')]"
+          },
           "tags": {
             "value": "[parameters('tags')]"
           }
@@ -418,13 +441,6 @@
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
           "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.41.2.15936",
-              "templateHash": "9336906004737187613"
-            }
-          },
           "parameters": {
             "baseName": {
               "type": "string"
@@ -448,6 +464,12 @@
               "type": "string"
             },
             "acrResourceId": {
+              "type": "string"
+            },
+            "powerPlatformRegion": {
+              "type": "string"
+            },
+            "powerPlatformMacroRegion": {
               "type": "string"
             },
             "tags": {
@@ -533,6 +555,14 @@
                         {
                           "name": "DEVELOPMENT_WORKER_ENABLED",
                           "value": "true"
+                        },
+                        {
+                          "name": "PP_DEFAULT_REGION",
+                          "value": "[parameters('powerPlatformRegion')]"
+                        },
+                        {
+                          "name": "PP_PAC_MACRO_REGION",
+                          "value": "[parameters('powerPlatformMacroRegion')]"
                         }
                       ]
                     }

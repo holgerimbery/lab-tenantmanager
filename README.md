@@ -216,6 +216,28 @@ Note the `password` value — you will need it in Step 3.
 
 Click the button below or use the CLI commands. The deployment creates a Container App, Cosmos DB, Key Vault, and assigns all required managed-identity roles automatically.
 
+Select the required **powerPlatformGeography** once. The template automatically sets both
+`PP_DEFAULT_REGION` and `PP_PAC_MACRO_REGION`; no post-deployment PAC configuration is needed.
+This choice is separate from the Azure hosting `location`.
+
+| Geography | PAC residency boundary | Legacy BAP default |
+|----------|------------------------|--------------------|
+| `north-america` | United States or Canada | `unitedstates` |
+| `the-americas` | North or South America | `unitedstates` |
+| `eu-efta` | EU/EFTA (EU Data Boundary) | `europe` |
+| `europe-uk` | EU/EFTA or UK; not UK-only or EUDB | `europe` |
+| `emea` | Europe, UK, Middle East or Africa | `europe` |
+| `asia-pacific` | Asia-Pacific | `australia` |
+
+The BAP default is a legacy location within the chosen boundary, not a prediction of PAC's
+capacity-based placement. Australia avoids legacy `asia`, which can include Hong Kong outside
+the macro-region's current placement set. See [Microsoft's macro-region guidance](https://learn.microsoft.com/power-platform/admin/macro-regions).
+The PAC boundary applies across tenants in this deployment; use separate deployments for different
+required boundaries. Existing environments are not moved.
+
+To check the template's required geography and environment wiring offline, run
+`node --test deploy/azuredeploy.test.cjs` (Node.js 20+; no dependencies or Azure resources required).
+
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json)
 > ⚠️ Before deploying, complete the required setup in [Prerequisites](#prerequisites) and [Step 1 — App Registration](#step-1--app-registration).
 
@@ -232,7 +254,8 @@ az deployment group create \
   --template-uri https://raw.githubusercontent.com/holgerimbery/lab-tenantmanager/main/deploy/azuredeploy.json \
   --parameters \
       baseName=ltm \
-      kvAdminObjectId=<your-object-id>
+      kvAdminObjectId=<your-object-id> \
+      powerPlatformGeography=eu-efta
 ```
 
 **Resources created** (naming pattern uses your `baseName`):
@@ -274,7 +297,6 @@ az containerapp update -n $CA -g $RG --set-env-vars \
   "OPERATOR_TENANT_ID=<your-operator-tenant-id>" \
   "NEXTAUTH_URL=https://<your-container-app-fqdn>" \
   "MAIL_SENDER_UPN=noreply@yourdomain.com" \
-  "PP_DEFAULT_REGION=europe" \
   "PP_DEFAULT_CURRENCY=EUR" \
   "PP_DEFAULT_LANGUAGE=1033" \
   "USAGE_LOCATION=DE"
@@ -297,12 +319,12 @@ az containerapp update -n $CA -g $RG --set-env-vars \
 | `NEXTAUTH_SECRET` | Random 32-byte base64 string | (secret ref) |
 | `AUTH_SECRET` | Random 32-byte base64 string | (secret ref) |
 | `MAIL_SENDER_UPN` | Mailbox in the operator tenant used as email sender | `noreply@yourdomain.com` |
-| `PP_DEFAULT_REGION` | Power Platform region | `europe`, `unitedstates` |
+| `PP_DEFAULT_REGION` | Legacy BAP location derived by the template from `powerPlatformGeography`; do not override during initial setup | `europe`, `unitedstates`, `australia` |
 | `PP_DEFAULT_CURRENCY` | Currency for new environments | `EUR`, `USD` |
 | `PP_DEFAULT_LANGUAGE` | LCID for new environments | `1033` (English) |
 | `USAGE_LOCATION` | ISO 3166-1 country for Entra ID user accounts | `DE`, `US` |
 | `DEVELOPMENT_WORKER_ENABLED` | Runs the development-environment worker (set by the template) | `true` |
-| `PP_PAC_MACRO_REGION` | Optional PAC CLI macro region when the region is not `unitedstates` | `eu-efta`, `europe-uk` |
+| `PP_PAC_MACRO_REGION` | PAC macro-region set automatically by the template from `powerPlatformGeography` | `eu-efta`, `europe-uk` |
 
 ### Access model
 
@@ -376,7 +398,7 @@ Image updates keep your environment variables. Existing deployments additionally
 | A participant environment failed | Transient Power Platform error | **Lab Users → Retry environment** (no duplicates); for Lab - Admin / Target use the retry button on the tenant page |
 | Maker portal sign-in fails | `tenant-maker` redirect URI missing | Add all four redirect URIs from Step 1 |
 | Development environments stay queued | Worker not running | Set `DEVELOPMENT_WORKER_ENABLED=true`, keep `minReplicas` 1 |
-| Developer environment fails outside the US | No PAC macro region | Set `PP_PAC_MACRO_REGION` (e.g. `eu-efta`) |
+| Developer environment fails outside the US | Older deployment lacks PAC macro-region configuration | Check `powerPlatformGeography` and its two template-wired region variables; image-only updates retain old settings |
 | Removing a tenant returns 409 | Development environments still exist | Delete them on **Participants & development** first |
 
 For detailed diagnostics see the [Wiki](../../wiki).
