@@ -124,6 +124,24 @@ See [Development Environments](https://github.com/holgerimbery/lab-tenantmanager
 
 ## Step 1 — App Registration
 
+> 💡 **Quick path (recommended):** Run the automated bootstrap script. It verifies required CLI tools and modules, logs into your tenant, lets you choose your subscription, creates the multi-tenant app registration, assigns all permissions, grants admin consent, and generates the client secret in one step without manual GUID copying.
+>
+> **PowerShell:**
+> ```powershell
+> .\deploy\scripts\setup-prerequisites.ps1
+> ```
+>
+> **Bash:**
+> ```bash
+> ./deploy/scripts/setup-prerequisites.sh
+> ```
+>
+> *Security notice: The bootstrap script prints secrets to the console only. Never commit secrets to git.*
+
+If you prefer to configure the app registration manually, follow the steps below.
+
+> ℹ️ *Note: The permission GUIDs in the commands below are fixed Microsoft identifiers — copy them as-is. Only `CLIENT_ID` and `FQDN` are your custom values.*
+
 Create a **multi-tenant** app registration in your **operator tenant**.
 
 ```bash
