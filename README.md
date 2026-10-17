@@ -46,6 +46,12 @@ Choose the mode per tenant when you onboard it. Both modes can run side by side 
 - **Power Platform environment provisioning** — creates one personal Developer environment (with Dataverse) per participant, routed to the Maker Welcome experience
 - **Workshop code system** — generate shareable codes with optional expiry and usage limits; participants redeem them at a self-service portal
 - **Automated credential emails** — sends username, password, Power Apps URL, and Copilot Studio URL from your operator-tenant mailbox; resend at any time
+- **Workshop sessions and participant support** — organize workshop sessions with time-limited instructor access, participant workspaces, and a session-scoped help board
+- **Developer portal readiness and recovery** — guided configuration readiness, read-only eligibility previews, admin diagnostics, per-user license repair, and safe environment recovery
+- **Operational readiness and cleanup** — readiness snapshots, cleanup previews, an audit and recovery timeline, and holds for operational follow-up
+- **Starter kits and solution management** — reusable starter kits, a private global GitHub catalog, exact-commit imports, recoverable review-PR exports, and stored solution ZIP deletion
+- **Lifecycle notifications** — an in-app inbox and opt-in email notifications; lifecycle email uses the operator mailbox when configured
+- **Reliable administration** — permission and consent checks, delegated-email diagnostics, and recovery from transient Graph throttling
 - **Pre-flight checks** — verify tenant licenses, delegated token availability, and security group membership before provisioning
 - **Lab cleanup** — removes only the accounts and environments the app created, to reset the tenant between workshops
 - **Safe recovery** — retry a failed participant environment or Lab - Admin / Lab - Target without rerunning setup or creating duplicates
@@ -418,11 +424,11 @@ If neither variable is set, the previous behavior is preserved for backward comp
 2. Go to **Tenants → Onboard Tenant**, choose **🎓 Workshop lab** or **🛠️ Development environments**, and enter the lab tenant domain.
 3. Copy the generated **onboarding URL** and open it as (or send it to) the lab tenant Global Admin — they grant consent once. The app then opens the right next step automatically.
 4. **Workshop lab:** complete the setup wizard, run **Pre-flight checks**, then open **Manage Codes**, generate a workshop code and share it with participants.
-5. **Development environments:** follow the *Getting started* checklist on **Participants & development** — pick the security group, required licenses and policy (region, quotas, DLP), save, preview, then share the maker portal link.
+5. **Development environments:** follow the *Getting started* checklist on **Participants & development** — pick the security group, required licenses and policy (region, quotas, DLP), save, review the read-only eligibility preview, then share the maker portal link. Admin diagnostics and per-user license repair are available when follow-up is needed.
 
 ### Participant self-service
 
-- **Workshop:** participants go to `https://<your-fqdn>/redeem`, enter the workshop code and their email address, and receive their credentials on-screen and by email.
+- **Workshop:** participants go to `https://<your-fqdn>/redeem`, enter the workshop code and their email address, and receive their credentials on-screen and by email. Workshop sessions can also provide participant workspaces and a session-scoped help board.
 - **Development:** members open `https://<your-fqdn>/sign-in?portal=developer`, sign in with their own account, and create, renew or delete their developer environments.
 
 ---
@@ -467,7 +473,7 @@ Image updates keep your environment variables. Existing deployments additionally
 | Developer environment fails outside the US | Older deployment lacks PAC macro-region configuration | Check `powerPlatformGeography` and its two template-wired region variables; image-only updates retain old settings |
 | Removing a tenant returns 409 | Development environments still exist | Delete them on **Participants & development** first |
 
-For detailed diagnostics see the [Wiki](../../wiki).
+For detailed diagnostics see the [Wiki](https://github.com/holgerimbery/lab-tenantmanager/wiki).
 
 ---
 
