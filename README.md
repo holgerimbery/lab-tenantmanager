@@ -1,4 +1,4 @@
-# Lab Tenant Manager
+# MATE365 — Lab Tenant Manager
 
 > Automate Microsoft 365 lab-tenant provisioning for Power Platform workshops — and let teams create governed developer environments themselves. Deployed in minutes to your own Azure subscription.  
 [![Container image](https://img.shields.io/badge/image-ghcr.io%2Fholgerimbery%2Flab--tenant--manager-blue)](https://ghcr.io/holgerimbery/lab-tenant-manager)  
@@ -11,9 +11,9 @@
 
 ---
 
-## What is Lab Tenant Manager?
+## What is MATE365?
 
-**Lab Tenant Manager** is a SaaS web application that helps workshop operators manage Microsoft 365 **lab tenants** used in Power Platform trainings.  
+**MATE365 — Lab Tenant Manager** is a SaaS web application that helps workshop operators manage Microsoft 365 **lab tenants** used in Power Platform trainings.  
 It automates the full lifecycle: tenant onboarding, pre-flight checks, participant code generation, per-user Power Platform environment provisioning, and credential email delivery — all without giving participants direct admin access to the lab tenant.
 
 It can also run a tenant as a **development environment manager**: members of an existing Entra security group sign in with their own accounts and create Power Platform developer environments themselves — with required licenses, quotas, DLP policies and retention enforced.
@@ -69,7 +69,7 @@ Choose the mode per tenant when you onboard it. Both modes can run side by side 
 │  Operator Tenant (your tenant — hosts the SaaS admins)               │
 │  ┌──────────────────────────┐   ┌───────────────────────────────┐    │
 │  │  Azure Container App     │   │  Multi-tenant App Registration │    │
-│  │  (Lab Tenant Manager)    │◄──│  • consented by each lab       │    │
+│  │  (MATE365)               │◄──│  • consented by each lab       │    │
 │  └────────────┬─────────────┘   │    tenant at onboarding        │    │
 │               │                 │  • OIDC login for SaaS admins  │    │
 │  ┌────────────▼─────────────┐   │  • Mail.Send (Application)     │    │
@@ -304,7 +304,7 @@ authenticate to ACR during bootstrap; the app's managed identity receives `AcrPu
 after the app exists. This placeholder is **not** the application — it has no secrets
 and no database access. Configuration turns it into the running app: it stores the
 secrets, sets the environment variables, switches ingress to port 3000, and replaces
-the placeholder with the Lab Tenant Manager image.
+the placeholder with the MATE365 image.
 
 ### Easy path — configuration script
 
