@@ -1,6 +1,7 @@
-# MATE365 — Lab Tenant Manager
+# MATE365 — Tenant Manager
 
-> Automate Microsoft 365 lab-tenant provisioning for Power Platform workshops — and let teams create governed developer environments themselves. Deployed in minutes to your own Azure subscription.  
+> Automate your workshops, labs, and development environments — for Power Platform, Copilot Studio & AI. Deployed in minutes to your own Azure subscription.
+
 [![Container image](https://img.shields.io/badge/image-ghcr.io%2Fholgerimbery%2Flab--tenant--manager-blue)](https://ghcr.io/holgerimbery/lab-tenant-manager)  
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fholgerimbery%2Flab-tenantmanager%2Fmain%2Fdeploy%2Fazuredeploy.json)  
 > ⚠️ Before deploying, complete the required setup in [Prerequisites](#prerequisites) and [Step 1 — App Registration](#step-1--app-registration).
@@ -13,10 +14,10 @@
 
 ## What is MATE365?
 
-**MATE365 — Lab Tenant Manager** is a SaaS web application that helps workshop operators manage Microsoft 365 **lab tenants** used in Power Platform trainings.  
-It automates the full lifecycle: tenant onboarding, pre-flight checks, participant code generation, per-user Power Platform environment provisioning, and credential email delivery — all without giving participants direct admin access to the lab tenant.
+**MATE365 — Tenant Manager** is a SaaS web application for managing Microsoft 365 tenants for **workshops and labs** and **ongoing development** with Power Platform, Copilot Studio & AI. It provides two equally supported modes:
 
-It can also run a tenant as a **development environment manager**: members of an existing Entra security group sign in with their own accounts and create Power Platform developer environments themselves — with required licenses, quotas, DLP policies and retention enforced.
+- **Workshop and lab management** — automate tenant onboarding, pre-flight checks, participant code generation, per-user Power Platform environment provisioning, and credential email delivery, without giving participants direct admin access to the tenant.
+- **Development environment management** — members of an existing Entra security group sign in with their own accounts and create, renew, and delete Power Platform developer environments themselves, with required licenses, quotas, DLP policies, and retention enforced.
 
 The application runs as an **Azure Container App** in your own Azure subscription and is delivered as a pre-built container image — no build step required.
 
@@ -24,7 +25,7 @@ The application runs as an **Azure Container App** in your own Azure subscriptio
 
 ### Two modes
 
-Choose the mode per tenant when you onboard it. Both modes can run side by side in one installation, and a **Mode** column shows each tenant's mode.
+Choose the mode per tenant when you onboard it. Both modes can run side by side in one installation, using separate tenants, and a **Mode** column shows each tenant's mode.
 
 | | 🎓 **Workshop lab** | 🛠️ **Development environment manager** |
 |---|---|---|
@@ -69,7 +70,7 @@ Choose the mode per tenant when you onboard it. Both modes can run side by side 
 │  Operator Tenant (your tenant — hosts the SaaS admins)               │
 │  ┌──────────────────────────┐   ┌───────────────────────────────┐    │
 │  │  Azure Container App     │   │  Multi-tenant App Registration │    │
-│  │  (MATE365)               │◄──│  • consented by each lab       │    │
+│  │  (MATE365)               │◄──│  • consented by each managed   │    │
 │  └────────────┬─────────────┘   │    tenant at onboarding        │    │
 │               │                 │  • OIDC login for SaaS admins  │    │
 │  ┌────────────▼─────────────┐   │  • Mail.Send (Application)     │    │
@@ -80,7 +81,7 @@ Choose the mode per tenant when you onboard it. Both modes can run side by side 
          │  MS Graph + Power Platform API (app + delegated)
          ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│  Lab Tenant (demo Microsoft 365 tenant — one per client)             │
+│  Managed Tenant (Microsoft 365 — workshop/lab or development)        │
 │  • Workshop: labadmin* accounts, each with its own Developer env     │
 │  • Development: group members create governed Developer envs         │
 │    themselves in the maker portal (licenses, quotas, DLP)            │
@@ -106,7 +107,7 @@ Quickstart - [below](https://github.com/holgerimbery/lab-tenantmanager/blob/main
 Before you deploy, you need:
 
 - An **Azure subscription** with Contributor rights on a resource group
-- A **Microsoft 365 operator tenant** (the tenant where your SaaS admins will sign in — this is *your* tenant, not the lab tenant)
+- A **Microsoft 365 operator tenant** (the tenant where your SaaS admins will sign in — this is *your* tenant, not the tenant managed for workshops, labs, or development)
 - Azure CLI installed: `az version` ≥ 2.60
 - Your Entra ID **Object ID** for Key Vault admin access:
 
@@ -153,7 +154,7 @@ Create a **multi-tenant** app registration in your **operator tenant**.
 ```bash
 # Create the app registration
 az ad app create \
-  --display-name "Lab Tenant Manager" \
+  --display-name "MATE365 — Tenant Manager" \
   --sign-in-audience AzureADMultipleOrgs
 ```
 
@@ -421,8 +422,8 @@ If neither variable is set, the previous behavior is preserved for backward comp
 ## Step 4 — First Login & Onboarding
 
 1. Navigate to `https://<your-container-app-fqdn>/sign-in` and sign in with your **operator tenant** Microsoft account. The Admin Portal dashboard is at `https://<your-container-app-fqdn>/admin`; the root URL redirects participants to `/redeem`.
-2. Go to **Tenants → Onboard Tenant**, choose **🎓 Workshop lab** or **🛠️ Development environments**, and enter the lab tenant domain.
-3. Copy the generated **onboarding URL** and open it as (or send it to) the lab tenant Global Admin — they grant consent once. The app then opens the right next step automatically.
+2. Go to **Tenants → Onboard Tenant**, choose **🎓 Workshop lab** or **🛠️ Development environments**, and enter the tenant domain.
+3. Copy the generated **onboarding URL** and open it as (or send it to) the tenant's Global Admin — they grant consent once. The app then opens the right next step automatically.
 4. **Workshop lab:** complete the setup wizard, run **Pre-flight checks**, then open **Manage Codes**, generate a workshop code and share it with participants.
 5. **Development environments:** follow the *Getting started* checklist on **Participants & development** — pick the security group, required licenses and policy (region, quotas, DLP), save, review the read-only eligibility preview, then share the maker portal link. Admin diagnostics and per-user license repair are available when follow-up is needed.
 
