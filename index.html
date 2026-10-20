@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MATE365 — Lab Tenant Manager — Automate Power Platform Workshop Tenants</title>
-  <meta name="description" content="MATE365 — Lab Tenant Manager automates Microsoft 365 lab-tenant provisioning for Power Platform workshops. Deploy to your own Azure subscription in minutes." />
+  <title>MATE365 — Tenant Manager — Workshops, Labs &amp; Development Environments</title>
+  <meta name="description" content="MATE365 — Tenant Manager: Automate your workshops, labs, and development environments — for Power Platform, Copilot Studio &amp; AI. Deploy to your own Azure subscription in minutes." />
   <meta name="robots" content="index, follow" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -254,7 +254,7 @@
 
 <!-- ── Nav ──────────────────────────────────────────────────────────── -->
 <nav class="nav" role="navigation" aria-label="Main navigation">
-  <a href="index.html" class="nav-brand">⚙ MATE365 — Lab Tenant Manager</a>
+  <a href="index.html" class="nav-brand">⚙ MATE365 — Tenant Manager</a>
   <div class="nav-links">
     <a href="#features">Features</a>
     <a href="#gallery">Gallery</a>
@@ -267,12 +267,12 @@
 <!-- ── Hero ─────────────────────────────────────────────────────────── -->
 <section class="hero">
   <div class="hero-badge">Open for Deployment · Closed Source</div>
-  <h1>MATE365 — Lab Tenant Manager<br/>Automate your workshops —<br/>Power Platform, Copilot Studio &amp; AI</h1>
+  <h1>MATE365 — Tenant Manager<br/>Automate your workshops, labs,<br/>and development environments —<br/>for Power Platform, Copilot Studio &amp; AI.</h1>
   <p class="hero-sub">
-    MATE365 provisions Microsoft 365 lab tenants, creates dedicated Power Platform,
-    Copilot Studio agent, and Azure AI environments for every participant, and delivers
-    credentials by email — ready for workshops, hackathons, and training labs alike.
-    New in 0.7.0: let your teams create governed developer environments themselves.
+    Manage Microsoft 365 tenants for workshops and labs and for ongoing development.
+    Provision participant accounts and Power Platform environments with credential delivery for workshops and labs.
+    Give development teams governed self-service to create, renew, and delete their own environments.
+    Both modes run side by side in your own Azure subscription.
   </p>
   <div class="hero-actions">
     <a class="btn btn-primary"
@@ -294,7 +294,7 @@
 <section class="section" id="features">
   <div class="section-inner">
     <div class="section-label">Features</div>
-    <h2 class="section-title">Everything you need to run a workshop — or a dev team</h2>
+    <h2 class="section-title">Workshop, lab, and development management — side by side</h2>
     <p class="section-sub">No build step. No Kubernetes. Just deploy and go.</p>
 
     <div class="features">
@@ -305,7 +305,7 @@
       </div>
       <div class="feature-card">
         <div class="feature-icon">🛠</div>
-        <h3>Development environment manager <span style="font-size:.7rem;color:var(--c-accent);">NEW</span></h3>
+        <h3>Development environment manager</h3>
         <p>Members of a security group create, renew and delete their own developer environments in a maker portal. Quotas, region, DLP, retention and environment groups are enforced.</p>
       </div>
       <div class="feature-card">
@@ -361,8 +361,8 @@
 <section class="section section-alt" id="recent-additions">
   <div class="section-inner">
     <div class="section-label">Recent additions</div>
-    <h2 class="section-title">More control across every stage of a lab</h2>
-    <p class="section-sub">New tools help teams prepare, run, and recover workshop and developer environments.</p>
+    <h2 class="section-title">More control across workshop, lab, and development lifecycles</h2>
+    <p class="section-sub">New tools help teams prepare, run, and recover workshop, lab, and development environments.</p>
 
     <div class="features">
       <div class="feature-card">
@@ -412,7 +412,7 @@
           <img src="images/gallery/manager-main.png" alt="Lab Tenants list view with onboarded tenant and management actions." loading="lazy" />
           <div class="gallery-caption">
             <h3>Tenant overview</h3>
-            <p>View onboarded lab tenants, current status, and jump directly into tenant management.</p>
+            <p>View onboarded tenants, current status, and jump directly into tenant management.</p>
           </div>
         </a>
       </article>
@@ -479,7 +479,7 @@
 
     <div class="arch-wrap">
       <img src="architecture.svg"
-           alt="Architecture: Container App in operator tenant connects to App Registration, Cosmos DB, and Key Vault; calls MS Graph and Power Platform BAP APIs to provision per-user environments in lab tenants."
+           alt="Architecture: Container App in operator tenant connects to App Registration, Cosmos DB, and Key Vault; calls MS Graph and Power Platform BAP APIs to manage workshop, lab, and development environments."
            style="width:100%;max-width:860px;display:block;margin:0 auto;border-radius:8px;" />
     </div>
   </div>
@@ -500,7 +500,7 @@
           <h3>Create an App Registration</h3>
           <p>Create a multi-tenant Entra ID app registration in your operator tenant, grant the required Microsoft Graph application permissions (<code>User.ReadWrite.All</code>, <code>Group.ReadWrite.All</code>, <code>Directory.ReadWrite.All</code>, <code>LicenseAssignment.ReadWrite.All</code>, <code>Mail.Send</code>) plus the Power Platform delegated scope, then note the client ID and secret. Add redirect URIs after Step 2 once the Container App FQDN is known.</p>
           <pre class="code-block"><code>az ad app create \
-  --display-name "Lab Tenant Manager" \
+  --display-name "MATE365 — Tenant Manager" \
   --sign-in-audience AzureADMultipleOrgs</code></pre>
           <p style="margin-top:.5rem;font-size:.8rem;">
             <a href="https://github.com/holgerimbery/lab-tenantmanager/wiki/App-Registration"
