@@ -23,22 +23,54 @@
     }
   }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    (() => {
+      const saved = localStorage.getItem("theme");
+      const theme = saved === "light" || saved === "dark" ? saved
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Palette and typography shared with instruo365.com */
     :root {
-      --c-bg:      #f8fafc;
+      color-scheme: light;
+      --c-bg:      #f7f4ef;
+      --c-bg-elevated: #fcfbf8;
       --c-surface: #ffffff;
-      --c-border:  #e2e8f0;
-      --c-text:    #1e293b;
-      --c-muted:   #64748b;
-      --c-accent:  #2563eb;
-      --c-dark:    #0f172a;
+      --c-surface-soft: #f5f5f5;
+      --c-border:  #dedede;
+      --c-text:    #242424;
+      --c-muted:   #5c5c5c;
+      --c-accent:  #b11f4b;
+      --c-accent-hover: #9a1a41;
+      --c-accent-soft: rgba(177, 31, 75, 0.08);
+      --c-accent-fg: #ffffff;
+      --c-link:    #0078d4;
+      --c-panel:   rgba(255, 255, 255, 0.96);
+      --c-dark:    #292929;
       --radius:    12px;
-      --font: 'Inter', system-ui, -apple-system, sans-serif;
-      --nav-h: 64px;
+      --font: "Segoe UI", "Segoe UI Variable", "Segoe UI Web", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      --nav-h: 72px;
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --c-bg:      #3d3b3a;
+      --c-bg-elevated: #343231;
+      --c-surface: #292929;
+      --c-surface-soft: #2e2e2e;
+      --c-border:  #474747;
+      --c-text:    #dedede;
+      --c-muted:   #919191;
+      --c-accent:  #fd8ea1;
+      --c-accent-hover: #fb7b91;
+      --c-accent-soft: rgba(253, 142, 161, 0.14);
+      --c-accent-fg: #1a1a1a;
+      --c-link:    #4da6ff;
+      --c-panel:   rgba(41, 41, 41, 0.96);
+      --c-dark:    #1f1f1f;
     }
     html { scroll-behavior: smooth; }
     body {
@@ -265,6 +297,40 @@
       .step { grid-template-columns: 1fr; }
       .step-num { margin-bottom: -.5rem; }
     }
+
+    /* ── instruo365 alignment: themed nav, hero, footer, buttons ─────── */
+    a { color: var(--c-link); }
+    .nav { background: var(--c-panel); border-bottom: 1px solid var(--c-border); }
+    .nav-brand { color: var(--c-text); font-weight: 800; letter-spacing: -.035em; }
+    .nav-links { align-items: center; }
+    .nav-links a { color: var(--c-muted); font-weight: 650; }
+    .nav-links a:hover { color: var(--c-accent); }
+    .theme-toggle {
+      display: inline-grid; width: 2.5rem; height: 2.5rem; place-items: center;
+      color: var(--c-text); background: var(--c-surface-soft);
+      border: 1px solid var(--c-border); border-radius: .625rem; cursor: pointer;
+    }
+    .theme-toggle:hover { border-color: var(--c-accent); color: var(--c-accent); }
+    .hero { background: var(--c-accent); }
+    .hero h1 { color: var(--c-accent-fg); }
+    .hero-sub, .hero-image-note { color: var(--c-accent-fg); opacity: .85; }
+    .hero-badge { background: transparent; border-color: var(--c-accent-fg); color: var(--c-accent-fg); }
+    .hero a:not(.btn) { color: var(--c-accent-fg); text-decoration: underline; }
+    .deploy-prereq-hint { color: var(--c-muted); }
+    .hero .deploy-prereq-hint { color: var(--c-accent-fg); opacity: .85; }
+    .btn-primary { background: var(--c-accent-fg); color: var(--c-accent); }
+    .btn-primary:hover { background: var(--c-accent-fg); opacity: .9; }
+    .btn-outline { color: var(--c-accent-fg); border-color: var(--c-accent-fg); }
+    .btn-outline:hover { background: rgba(255,255,255,.14); color: var(--c-accent-fg); }
+    .section:not(.section-alt) .btn-primary { background: var(--c-accent); color: var(--c-accent-fg); }
+    .feature-icon { background: var(--c-accent-soft); }
+    .step-num { color: var(--c-accent-fg); }
+    .btn-dark { background: var(--c-accent); color: var(--c-accent-fg); border-color: transparent; }
+    .btn-dark:hover { background: var(--c-accent-hover); color: var(--c-accent-fg); }
+    .footer { background: var(--c-bg-elevated); border-top: 1px solid var(--c-border); }
+    .footer-inner p { color: var(--c-muted); }
+    .footer-inner a { color: var(--c-muted); font-weight: 650; }
+    .footer-inner a:hover { color: var(--c-accent); }
   </style>
 </head>
 <body>
@@ -279,6 +345,9 @@
     <a href="#deploy">Deploy</a>
     <a href="#author">Author</a>
     <a href="https://github.com/holgerimbery/lab-tenantmanager" target="_blank" rel="noopener">GitHub</a>
+    <button class="theme-toggle" id="darkModeToggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+      <i class="fas fa-moon" aria-hidden="true"></i>
+    </button>
   </div>
 </nav>
 
@@ -629,8 +698,8 @@ az deployment group create \
     <p>
       &copy; 2025 <a href="https://github.com/holgerimbery" target="_blank" rel="noopener">Holger Imbery</a>.
       All rights reserved. ·
-      <a href="privacy.html">Privacy Policy</a> ·
-      <a href="impressum.html">Impressum</a>
+      <a href="https://instruo365.com/privacy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a> ·
+      <a href="https://instruo365.com/impressum/" target="_blank" rel="noopener noreferrer">Impressum</a>
     </p>
     <div class="footer-links">
       <a href="https://github.com/holgerimbery/lab-tenantmanager" target="_blank" rel="noopener">GitHub</a>
@@ -640,5 +709,21 @@ az deployment group create \
   </div>
 </footer>
 
+<script>
+  const themeButton = document.getElementById("darkModeToggle");
+  const themeIcon = themeButton.querySelector("i");
+  function setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    themeButton.setAttribute("aria-pressed", String(theme === "dark"));
+    themeButton.setAttribute("aria-label", theme === "dark" ? "Switch to light theme" : "Switch to dark theme");
+    themeIcon.className = theme === "dark" ? "fas fa-sun" : "fas fa-moon";
+  }
+  setTheme(document.documentElement.getAttribute("data-theme"));
+  themeButton.addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+  });
+</script>
 </body>
 </html>
