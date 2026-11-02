@@ -326,6 +326,11 @@
       border: 1px solid var(--c-border); border-radius: .625rem; cursor: pointer;
     }
     .theme-toggle:hover { border-color: var(--c-accent); color: var(--c-accent); }
+    @media (max-width: 760px) {
+      .nav { position: static; height: auto; flex-direction: column; align-items: flex-start; gap: .75rem; padding: .75rem 1.25rem; }
+      .nav-links { flex-wrap: wrap; gap: .5rem 1rem; width: 100%; }
+      .nav-brand-product { font-size: .8rem; }
+    }
     .hero { background: var(--c-accent); }
     .hero h1 { color: var(--c-accent-fg); }
     .hero-sub, .hero-image-note { color: var(--c-accent-fg); opacity: .85; }
