@@ -25,8 +25,8 @@
   </script>
   <script>
     (() => {
-      const saved = localStorage.getItem("theme");
-      const theme = saved === "light" || saved === "dark" ? saved
+      const forced = new URLSearchParams(location.search).get("scoutTheme");
+      const theme = forced === "light" || forced === "dark" ? forced
         : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
       document.documentElement.setAttribute("data-theme", theme);
     })();
@@ -747,7 +747,6 @@ az deployment group create \
   themeButton.addEventListener("click", () => {
     const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
     setTheme(next);
-    localStorage.setItem("theme", next);
   });
 </script>
 </body>
