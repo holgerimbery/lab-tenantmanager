@@ -8,12 +8,17 @@
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Holger Imbery" />
   <link rel="author" href="https://instruo365.de" />
+  <link rel="icon" href="images/branding/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="16x16" href="images/branding/mate365-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/branding/mate365-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="images/branding/mate365-180.png" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "MATE365 — Tenant Manager",
     "url": "https://www.mate365.app/",
+    "image": "https://www.mate365.app/images/branding/mate365-512.png",
     "applicationCategory": "BusinessApplication",
     "author": {
       "@type": "Person",
@@ -116,6 +121,10 @@
       background: rgba(37,99,235,.2); border: 1px solid rgba(37,99,235,.35);
       color: #93c5fd; font-size: .78rem; font-weight: 500; letter-spacing: .03em;
       margin-bottom: 1.5rem;
+    }
+    .hero-logo {
+      display: block; width: clamp(96px, 16vw, 144px); height: auto;
+      margin: 0 auto 1.5rem;
     }
     .hero h1 {
       font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 800;
@@ -303,6 +312,12 @@
     .nav { background: var(--c-panel); border-bottom: 1px solid var(--c-border); }
     .nav-brand { color: var(--c-text); font-weight: 800; letter-spacing: -.035em; }
     .nav-brand {
+      display: flex; align-items: center; gap: .75rem; text-decoration: none;
+    }
+    .nav-brand-icon {
+      display: block; width: 48px; height: 48px; flex-shrink: 0;
+    }
+    .nav-brand-text {
       display: flex; flex-direction: column; align-items: flex-start;
       gap: .1rem; line-height: 1.15; text-decoration: none;
     }
@@ -360,8 +375,11 @@
 <!-- ── Nav ──────────────────────────────────────────────────────────── -->
 <nav class="nav" role="navigation" aria-label="Main navigation">
   <a href="index.html" class="nav-brand">
-    <span class="nav-brand-owner">Holger <span>Imbery</span></span>
-    <span class="nav-brand-product">MATE365 — Tenant Manager</span>
+    <img class="nav-brand-icon" src="images/branding/mate365-48.png" srcset="images/branding/mate365-192.png 4x" width="48" height="48" alt="" />
+    <span class="nav-brand-text">
+      <span class="nav-brand-owner">Holger <span>Imbery</span></span>
+      <span class="nav-brand-product">MATE365 — Tenant Manager</span>
+    </span>
   </a>
   <div class="nav-links">
     <a href="#features">Features</a>
@@ -378,6 +396,7 @@
 
 <!-- ── Hero ─────────────────────────────────────────────────────────── -->
 <section class="hero">
+  <img class="hero-logo" src="images/branding/mate365-192.png" srcset="images/branding/mate365-512.png 2x" width="192" height="192" alt="" />
   <div class="hero-badge">Open for Deployment · Closed Source</div>
   <h1>MATE365 — Tenant Manager<br/>Automate your workshops, labs,<br/>and development environments —<br/>for Power Platform, Copilot Studio &amp; AI.</h1>
   <p class="hero-sub">
