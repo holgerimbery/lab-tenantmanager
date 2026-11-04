@@ -1,3 +1,5 @@
+<img src="assets/branding/mate365-192.png" alt="MATE365" width="96" height="96" />
+
 # MATE365 — Tenant Manager
 
 > Automate your workshops, labs, and development environments — for Power Platform, Copilot Studio & AI. Deployed in minutes to your own Azure subscription.
