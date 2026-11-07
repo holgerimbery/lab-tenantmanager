@@ -1,7 +1,7 @@
 # MATE365 brand assets
 
-The MATE365 mark is a rounded lowercase **m** with glossy blue-to-teal gradients,
-created using the supplied Bridge365 icon as a sibling-brand reference.
+The MATE365 mark is a rounded lowercase **m** with a glossy red gradient that
+matches the `#b11f4b` accent and `#9a1a41` shade used by Instruo365 and Costs365.
 The PNG files have transparent backgrounds and work on light and dark surfaces.
 
 | Asset | Use |
